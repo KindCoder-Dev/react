@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Dev Kit — Шпаргалки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #060910;
+    --surface:  #0d1117;
+    --border:   #1c2333;
+    --muted:    #4a5568;
+    --text:     #e2e8f0;
+    --dim:      #8892a4;
+
+    --c1: #f97316;
+    --c2: #fb7185;
+    --c3: #8b5cf6;
+    --c4: #06b6d4;
+    --c5: #22c55e;
+    --c6: #3b82f6;
+    --guide: #f59e0b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── grid background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: .35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── glow orbs ── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .18;
+  }
+  .orb-1 { width: 600px; height: 600px; top: -200px; left: -150px; background: var(--c3); }
+  .orb-2 { width: 500px; height: 500px; bottom: -150px; right: -100px; background: var(--c4); }
+
+  /* ── layout ── */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* ── hero ── */
+  .hero {
+    padding: 80px 0 64px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(139,92,246,.12);
+    border: 1px solid rgba(139,92,246,.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: #a78bfa;
+    margin-bottom: 28px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .hero-title {
+    font-size: clamp(42px, 7vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: #f1f5f9;
+    margin-bottom: 20px;
+  }
+
+  .hero-title .accent {
+    background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 50%, var(--c3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--dim);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: -1px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── section ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    margin-top: 56px;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+
+  /* ── guide card ── */
+  .guide-card {
+    background: linear-gradient(135deg, rgba(245,158,11,.06) 0%, rgba(245,158,11,.02) 100%);
+    border: 1px solid rgba(245,158,11,.25);
+    border-radius: 16px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .guide-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(245,158,11,.05), transparent);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+
+  .guide-card:hover { transform: translateY(-2px); border-color: rgba(245,158,11,.5); box-shadow: 0 8px 32px rgba(245,158,11,.1); }
+  .guide-card:hover::before { opacity: 1; }
+
+  .guide-icon {
+    font-size: 40px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .guide-body { flex: 1; min-width: 0; }
+
+  .guide-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--guide);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 6px;
+  }
+
+  .guide-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+  }
+
+  .guide-desc {
+    font-size: 13px;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+
+  .guide-topics {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .guide-arrow {
+    font-size: 22px;
+    color: var(--guide);
+    flex-shrink: 0;
+    opacity: .7;
+    transition: transform .2s, opacity .2s;
+  }
+
+  .guide-card:hover .guide-arrow { transform: translateX(4px); opacity: 1; }
+
+  /* ── cheatsheet grid ── */
+  .sheets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 700px) {
+    .sheets-grid { grid-template-columns: 1fr; }
+    .guide-card { flex-direction: column; text-align: center; }
+    .guide-arrow { display: none; }
+  }
+
+  /* ── sheet card ── */
+  .sheet-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sheet-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .25s ease;
+  }
+
+  .sheet-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.4); }
+  .sheet-card:hover::after { transform: scaleX(1); }
+
+  .sheet-card[data-n="1"] { --accent: linear-gradient(90deg, var(--c1), var(--c2)); }
+  .sheet-card[data-n="2"] { --accent: linear-gradient(90deg, var(--c3), var(--c4)); }
+  .sheet-card[data-n="3"] { --accent: linear-gradient(90deg, var(--c4), var(--c5)); }
+
+  .sheet-card[data-n="1"]:hover { border-color: rgba(249,115,22,.3); }
+  .sheet-card[data-n="2"]:hover { border-color: rgba(139,92,246,.3); }
+  .sheet-card[data-n="3"]:hover { border-color: rgba(6,182,212,.3); }
+
+  .sheet-num {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .sheet-card[data-n="1"] .sheet-num { color: var(--c1); }
+  .sheet-card[data-n="2"] .sheet-num { color: var(--c3); }
+  .sheet-card[data-n="3"] .sheet-num { color: var(--c4); }
+
+  .sheet-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #f1f5f9;
+    line-height: 1.3;
+  }
+
+  .sheet-desc {
+    font-size: 12.5px;
+    color: var(--dim);
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  /* ── topic pills ── */
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pill {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .3px;
+    border: 1px solid;
+  }
+
+  .sheet-card[data-n="1"] .pill { color: var(--c1); border-color: rgba(249,115,22,.25); background: rgba(249,115,22,.07); }
+  .sheet-card[data-n="2"] .pill { color: var(--c3); border-color: rgba(139,92,246,.25); background: rgba(139,92,246,.07); }
+  .sheet-card[data-n="3"] .pill { color: var(--c4); border-color: rgba(6,182,212,.25); background: rgba(6,182,212,.07); }
+
+  .guide-pill {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .3px;
+    border: 1px solid;
+    color: var(--guide);
+    border-color: rgba(245,158,11,.25);
+    background: rgba(245,158,11,.07);
+  }
+
+  /* ── open btn ── */
+  .open-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    color: var(--dim);
+    transition: background .15s, color .15s, border-color .15s;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .sheet-card:hover .open-btn {
+    background: rgba(255,255,255,.08);
+    color: #f1f5f9;
+    border-color: rgba(255,255,255,.15);
+  }
+
+  /* ── footer ── */
+  .footer {
+    margin-top: 72px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-brand {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .footer-hint {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── enter animation ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero         { animation: fadeUp .6s ease both; }
+  .section-header { animation: fadeUp .6s ease both .15s; }
+  .guide-card   { animation: fadeUp .6s ease both .2s; }
+  .sheet-card   { animation: fadeUp .6s ease both; }
+  .sheet-card:nth-child(1) { animation-delay: .25s; }
+  .sheet-card:nth-child(2) { animation-delay: .35s; }
+  .sheet-card:nth-child(3) { animation-delay: .45s; }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="wrap">
+
+  <!-- ── HERO ─────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-badge">⚡ React Dev Kit</div>
+    <h1 class="hero-title">
+      Все шпаргалки<br>
+      <span class="accent">в одном месте</span>
+    </h1>
+    <p class="hero-sub">
+      Три шпаргалки и подробный путеводитель по стеку React.
+      Быстрый доступ к коду, паттернам и лучшим практикам.
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Шпаргалки</div>
+      </div>
+      <div class="stat" style="color: var(--border)">|</div>
+      <div class="stat">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Путеводитель</div>
+      </div>
+      <div class="stat" style="color: var(--border)">|</div>
+      <div class="stat">
+        <div class="stat-num">100+</div>
+        <div class="stat-label">Примеров кода</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GUIDE ─────────────────────────────────────── -->
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-label">Путеводитель</div>
+    <div class="section-line"></div>
+  </div>
+
+  <a href="guide.html" class="guide-card">
+    <div class="guide-icon">🧭</div>
+    <div class="guide-body">
+      <div class="guide-tag">Рекомендуем читать первым</div>
+      <div class="guide-title">Путеводитель по стеку</div>
+      <div class="guide-desc">
+        Что для чего используется, когда выбирать каждый инструмент,
+        как Router, Redux и RTK Query работают вместе в одном приложении.
+      </div>
+      <div class="guide-topics">
+        <span class="guide-pill">React Router</span>
+        <span class="guide-pill">Redux</span>
+        <span class="guide-pill">RTK Query</span>
+        <span class="guide-pill">TypeScript</span>
+        <span class="guide-pill">Зоны ответственности</span>
+      </div>
+    </div>
+    <div class="guide-arrow">→</div>
+  </a>
+
+  <!-- ── CHEATSHEETS ───────────────────────────────── -->
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-label">Шпаргалки</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="sheets-grid">
+
+    <!-- Sheet 1 -->
+    <a href="cheatsheet.html" class="sheet-card" data-n="1">
+      <div>
+        <div class="sheet-num">Шпаргалка № 1</div>
+        <div class="sheet-title">Router · Redux · RTK Query</div>
+      </div>
+      <div class="sheet-desc">
+        Полный справочник по роутингу, управлению состоянием и серверными данными.
+        BrowserRouter, createBrowserRouter, защищённые маршруты, useFetcher,
+        Redux Toolkit, RTK Query с тегами и инвалидацией.
+      </div>
+      <div class="pills">
+        <span class="pill">BrowserRouter</span>
+        <span class="pill">createBrowserRouter</span>
+        <span class="pill">loader / action</span>
+        <span class="pill">useFetcher</span>
+        <span class="pill">Redux slice</span>
+        <span class="pill">RTK Query</span>
+        <span class="pill">Tags</span>
+        <span class="pill">TypeScript</span>
+        <span class="pill">Best Practices</span>
+      </div>
+      <div class="open-btn">Открыть шпаргалку →</div>
+    </a>
+
+    <!-- Sheet 2 -->
+    <a href="cheatsheet2.html" class="sheet-card" data-n="2">
+      <div>
+        <div class="sheet-num">Шпаргалка № 2</div>
+        <div class="sheet-title">Forms · Hooks · Patterns · Zustand</div>
+      </div>
+      <div class="sheet-desc">
+        Формы с react-hook-form и zod, Error Boundaries,
+        кастомные хуки, паттерны компонентов, Zustand,
+        тесты и инструменты разработчика.
+      </div>
+      <div class="pills">
+        <span class="pill">react-hook-form</span>
+        <span class="pill">Zod</span>
+        <span class="pill">Error Boundaries</span>
+        <span class="pill">Custom Hooks</span>
+        <span class="pill">forwardRef</span>
+        <span class="pill">Portal</span>
+        <span class="pill">Zustand</span>
+        <span class="pill">Vitest</span>
+        <span class="pill">ESLint</span>
+      </div>
+      <div class="open-btn">Открыть шпаргалку →</div>
+    </a>
+
+    <!-- Sheet 3 -->
+    <a href="cheatsheet3.html" class="sheet-card" data-n="3">
+      <div>
+        <div class="sheet-num">Шпаргалка № 3</div>
+        <div class="sheet-title">Axios · TanStack · Tailwind · Suspense</div>
+      </div>
+      <div class="sheet-desc">
+        HTTP-клиент, серверные данные без Redux, утилитарный CSS,
+        code splitting с lazy, плавный UI через useTransition
+        и useDeferredValue.
+      </div>
+      <div class="pills">
+        <span class="pill">Axios</span>
+        <span class="pill">TanStack Query</span>
+        <span class="pill">Tailwind CSS</span>
+        <span class="pill">lazy + Suspense</span>
+        <span class="pill">useTransition</span>
+        <span class="pill">useDeferredValue</span>
+        <span class="pill">BrowserRouter</span>
+        <span class="pill">createBrowserRouter</span>
+      </div>
+      <div class="open-btn">Открыть шпаргалку →</div>
+    </a>
+
+  </div>
+
+  <!-- ── HOW TO USE ─────────────────────────────────── -->
+  <div class="section-header" style="margin-top: 56px">
+    <div class="section-line"></div>
+    <div class="section-label">С чего начать</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+      <div style="font-size: 22px; margin-bottom: 10px;">1️⃣</div>
+      <div style="font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px;">Читай путеводитель</div>
+      <div style="font-size: 12.5px; color: var(--dim); line-height: 1.6;">
+        Поймёшь кто за что отвечает и как инструменты работают вместе — прежде чем смотреть код.
+      </div>
+    </div>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+      <div style="font-size: 22px; margin-bottom: 10px;">2️⃣</div>
+      <div style="font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px;">Шпаргалка № 1</div>
+      <div style="font-size: 12.5px; color: var(--dim); line-height: 1.6;">
+        Основной стек — роутинг, Redux, RTK Query, TypeScript в React. Нужно знать каждому.
+      </div>
+    </div>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+      <div style="font-size: 22px; margin-bottom: 10px;">3️⃣</div>
+      <div style="font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px;">Шпаргалки № 2 и № 3</div>
+      <div style="font-size: 12.5px; color: var(--dim); line-height: 1.6;">
+        Формы, паттерны, альтернативы, оптимизация. Когда базовый стек уже освоен.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-brand">⚡ React Dev Kit</div>
+    <div class="footer-hint">// cheatsheet.html · cheatsheet2.html · cheatsheet3.html · guide.html</div>
+  </footer>
+
+</div>
+</body>
+</html>

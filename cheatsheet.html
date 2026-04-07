@@ -1,0 +1,3174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Cheat Sheet</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #010409; color: #e6edf3; font-family: system-ui, sans-serif; min-height: 100vh; padding-bottom: 60px; }
+  header { background: #0d1117; border-bottom: 1px solid #21262d; padding: 20px 16px 0; position: sticky; top: 0; z-index: 10; }
+  h1 { font-size: 20px; font-weight: 700; color: #f0f6fc; }
+  .subtitle { color: #8b949e; font-size: 13px; margin: 4px 0 14px; }
+  .tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+  .tab { padding: 8px 13px; font-size: 12.5px; font-weight: 500; cursor: pointer; background: transparent; color: #8b949e; border: none; border-bottom: 2px solid transparent; border-radius: 6px 6px 0 0; transition: color .15s; white-space: nowrap; }
+  .tab.active { background: #161b22; }
+  .content { max-width: 800px; margin: 0 auto; padding: 20px 16px 0; }
+  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #8b949e; margin: 28px 0 10px; padding-left: 2px; }
+  .section-label:first-child { margin-top: 0; }
+  .card { background: #0d1117; border: 1px solid #21262d; border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+  .card-header { padding: 10px 14px; border-bottom: 1px solid #21262d; background: #161b22; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #f0f6fc; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; margin-left: auto; }
+  .code-wrap { position: relative; padding: 0 12px 12px; }
+  pre { background: #010409; border: 1px solid #21262d; border-radius: 7px; padding: 12px 52px 12px 14px; font-size: 12px; line-height: 1.7; overflow-x: auto; color: #e6edf3; font-family: 'JetBrains Mono','Fira Code',monospace; white-space: pre; margin-top: 8px; }
+  .note { background: #161b22; border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 8px 12px; font-size: 12px; color: #d1a855; margin: 8px 0 0; line-height: 1.5; }
+  .note.info { border-color: #3b82f6; color: #93c5fd; }
+  .note.danger { border-color: #ef4444; color: #fca5a5; }
+  .note.success { border-color: #22c55e; color: #86efac; }
+  .copy-btn { position: absolute; top: 18px; right: 18px; background: #ffffff11; border: 1px solid #30363d; border-radius: 5px; color: #8b949e; font-size: 11px; padding: 3px 8px; cursor: pointer; font-family: monospace; transition: all .15s; }
+  .copy-btn.ok { background: #22c55e22; border-color: #22c55e; color: #22c55e; }
+
+  /* ── navbar ── */
+  .navbar {
+    background: #0d1117cc; backdrop-filter: blur(12px);
+    border-bottom: 1px solid #21262d; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .navbar a { font-size: 12.5px; font-weight: 600; color: #8b949e; text-decoration: none; padding: 5px 10px; border-radius: 6px; transition: background .15s, color .15s; white-space: nowrap; }
+  .navbar a:hover { background: #161b22; color: #f0f6fc; }
+  .navbar a.home { color: #f0f6fc; background: #161b22; }
+  .navbar .sep { color: #30363d; font-size: 13px; }
+  .navbar .title { font-size: 13px; font-weight: 700; color: #f0f6fc; }
+  .navbar-right { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="home">← Главная</a>
+  <span class="sep">/</span>
+  <span class="title">Шпаргалка №1</span>
+  <div class="navbar-right">
+    <a href="guide.html">Путеводитель</a>
+    <a href="cheatsheet2.html">Шпаргалка №2</a>
+    <a href="cheatsheet3.html">Шпаргалка №3</a>
+  </div>
+</nav>
+<header>
+  <h1>⚡ React Cheat Sheet</h1>
+  <p class="subtitle">Router · createBrowserRouter · Redux · RTK Query · Паттерны</p>
+  <div class="tabs" id="tabs"></div>
+</header>
+<div class="content" id="content"></div>
+
+<script>
+// ─── данные ─────────────────────────────────────────────────────────────────
+
+const TABS = [
+
+// ════════════════════════════════════════════════════════════
+// 1. REACT ROUTER — BrowserRouter
+// ════════════════════════════════════════════════════════════
+{
+  id: "router", label: "BrowserRouter", color: "#f97316",
+  groups: [
+    {
+      label: "Установка и базовая настройка",
+      cards: [
+        {
+          title: "Установка",
+          code: "npm install react-router-dom"
+        },
+        {
+          title: "main.tsx — обернуть приложение",
+          code: [
+            "import { BrowserRouter } from 'react-router-dom'",
+            "",
+            "ReactDOM.createRoot(document.getElementById('root')!).render(",
+            "  <BrowserRouter>",
+            "    <App />",
+            "  </BrowserRouter>",
+            ")"
+          ].join("\n")
+        },
+        {
+          title: "App.tsx — объявить маршруты",
+          code: [
+            "import { Routes, Route } from 'react-router-dom'",
+            "",
+            "function App() {",
+            "  return (",
+            "    <Routes>",
+            "      <Route path='/'           element={<Home />} />",
+            "      <Route path='/about'      element={<About />} />",
+            "      <Route path='/users/:id'  element={<User />} />",
+            "      <Route path='*'           element={<NotFound />} />",
+            "    </Routes>",
+            "  )",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Навигация",
+      cards: [
+        {
+          title: "Link и NavLink",
+          code: [
+            "import { Link, NavLink } from 'react-router-dom'",
+            "",
+            "// Обычная ссылка",
+            "<Link to='/about'>О нас</Link>",
+            "",
+            "// NavLink — автоматически получает класс 'active'",
+            "// когда путь совпадает",
+            "<NavLink to='/about'>О нас</NavLink>",
+            "",
+            "// NavLink с кастомным стилем для активной ссылки",
+            "<NavLink",
+            "  to='/about'",
+            "  style={({ isActive }) => ({",
+            "    color: isActive ? 'orange' : 'white'",
+            "  })}",
+            ">",
+            "  О нас",
+            "</NavLink>"
+          ].join("\n")
+        },
+        {
+          title: "useNavigate — программная навигация",
+          code: [
+            "import { useNavigate } from 'react-router-dom'",
+            "",
+            "function LoginPage() {",
+            "  const navigate = useNavigate()",
+            "",
+            "  const handleLogin = () => {",
+            "    // Простой переход",
+            "    navigate('/dashboard')",
+            "",
+            "    // Переход с заменой истории (не будет кнопки 'Назад')",
+            "    navigate('/dashboard', { replace: true })",
+            "",
+            "    // Передать данные на следующую страницу",
+            "    navigate('/dashboard', { state: { from: 'login' } })",
+            "",
+            "    // Назад / вперёд",
+            "    navigate(-1)  // назад",
+            "    navigate(1)   // вперёд",
+            "  }",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Navigate — редирект в JSX",
+          code: [
+            "import { Navigate } from 'react-router-dom'",
+            "",
+            "// Простой редирект",
+            "function OldPage() {",
+            "  return <Navigate to='/new-page' replace />",
+            "}",
+            "",
+            "// Условный редирект",
+            "function Dashboard() {",
+            "  const isAuth = useAuth()",
+            "",
+            "  if (!isAuth) {",
+            "    return <Navigate to='/login' replace />",
+            "  }",
+            "",
+            "  return <h1>Личный кабинет</h1>",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Хуки",
+      cards: [
+        {
+          title: "useParams — параметры маршрута",
+          code: [
+            "import { useParams } from 'react-router-dom'",
+            "",
+            "// Маршрут: /users/:id",
+            "// URL:     /users/42",
+            "function User() {",
+            "  const { id } = useParams<{ id: string }>()",
+            "  // id = '42'  ← всегда строка!",
+            "  return <h1>Пользователь {id}</h1>",
+            "}"
+          ].join("\n"),
+          note: "useParams всегда возвращает строки, даже если в URL число. Конвертируй: Number(id) или parseInt(id)"
+        },
+        {
+          title: "useSearchParams — query-строка",
+          code: [
+            "import { useSearchParams } from 'react-router-dom'",
+            "",
+            "// URL: /search?q=react&page=2",
+            "function SearchPage() {",
+            "  const [params, setParams] = useSearchParams()",
+            "",
+            "  const q    = params.get('q')     // 'react'",
+            "  const page = params.get('page')  // '2'",
+            "",
+            "  // Обновить query-строку без перезагрузки",
+            "  const nextPage = () => {",
+            "    setParams({ q: q ?? '', page: String(Number(page) + 1) })",
+            "  }",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "useLocation — текущий URL и state",
+          code: [
+            "import { useLocation } from 'react-router-dom'",
+            "",
+            "function SomePage() {",
+            "  const location = useLocation()",
+            "",
+            "  console.log(location.pathname) // '/about'",
+            "  console.log(location.search)   // '?q=react'",
+            "  console.log(location.hash)     // '#section1'",
+            "",
+            "  // Прочитать state переданный через navigate()",
+            "  const state = location.state as { from?: string }",
+            "  console.log(state?.from)       // 'login'",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Паттерны",
+      cards: [
+        {
+          title: "Вложенные маршруты + Outlet",
+          code: [
+            "// App.tsx — Layout оборачивает дочерние страницы",
+            "function App() {",
+            "  return (",
+            "    <Routes>",
+            "      <Route path='/' element={<Layout />}>",
+            "        <Route index       element={<Home />} />",
+            "        <Route path='about' element={<About />} />",
+            "        <Route path='users/:id' element={<User />} />",
+            "      </Route>",
+            "    </Routes>",
+            "  )",
+            "}",
+            "",
+            "// Layout.tsx — Outlet = место для дочерней страницы",
+            "function Layout() {",
+            "  return (",
+            "    <div>",
+            "      <Header />",
+            "      <main>",
+            "        <Outlet />",
+            "      </main>",
+            "      <Footer />",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "useOutletContext — передача данных через Outlet",
+          code: [
+            "// Layout.tsx — передаём данные в дочерние маршруты",
+            "import { Outlet, useOutletContext } from 'react-router-dom'",
+            "",
+            "interface LayoutContext { user: User; theme: string }",
+            "",
+            "function Layout() {",
+            "  const user  = useCurrentUser()",
+            "  const theme = useTheme()",
+            "  return (",
+            "    <div>",
+            "      <Header user={user} />",
+            "      <Outlet context={{ user, theme } satisfies LayoutContext} />",
+            "    </div>",
+            "  )",
+            "}",
+            "",
+            "// ChildPage.tsx — читаем данные из Layout",
+            "function ChildPage() {",
+            "  const { user, theme } = useOutletContext<LayoutContext>()",
+            "  return <p>Привет, {user.name}!</p>",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "useOutletContext — передача данных в дочерние маршруты без пробрасывания props или глобального стора"
+        },
+        {
+          title: "ProtectedRoute — защищённые маршруты",
+          code: [
+            "// ProtectedRoute.tsx",
+            "import { Navigate, Outlet } from 'react-router-dom'",
+            "",
+            "function ProtectedRoute() {",
+            "  const isAuth = useAuth()  // твой хук авторизации",
+            "",
+            "  // Если не авторизован — редирект на /login",
+            "  if (!isAuth) {",
+            "    return <Navigate to='/login' replace />",
+            "  }",
+            "",
+            "  return <Outlet />  // рендерим дочерние маршруты",
+            "}",
+            "",
+            "// App.tsx — использование",
+            "<Routes>",
+            "  <Route path='/login'  element={<Login />} />",
+            "  <Route element={<ProtectedRoute />}>",
+            "    <Route path='/dashboard' element={<Dashboard />} />",
+            "    <Route path='/profile'   element={<Profile />} />",
+            "  </Route>",
+            "</Routes>"
+          ].join("\n"),
+          noteType: "success",
+          note: "Паттерн ProtectedRoute — самый распространённый способ закрыть маршруты от неавторизованных пользователей"
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 2. createBrowserRouter
+// ════════════════════════════════════════════════════════════
+{
+  id: "cbr", label: "createBrowserRouter", color: "#fb7185",
+  groups: [
+    {
+      label: "Полный пример — как выглядит реальное приложение",
+      cards: [
+        {
+          title: "Зачем createBrowserRouter — разница с BrowserRouter",
+          code: [
+            "// BrowserRouter — маршруты в JSX, данные грузишь сам внутри компонента",
+            "// Проблема: компонент рендерится пустым, потом делает запрос",
+            "// Пользователь видит: пустой экран → skeleton → данные",
+            "",
+            "function PostPage() {                    // BrowserRouter подход",
+            "  const { id } = useParams()",
+            "  const [post, setPost] = useState(null)",
+            "  const [loading, setLoading] = useState(true)",
+            "",
+            "  useEffect(() => {                      // запрос ПОСЛЕ рендера",
+            "    fetch('/api/posts/' + id)",
+            "      .then(r => r.json())",
+            "      .then(data => { setPost(data); setLoading(false) })",
+            "  }, [id])",
+            "",
+            "  if (loading) return <Spinner />",
+            "  return <h1>{post.title}</h1>",
+            "}",
+            "",
+            "// createBrowserRouter — loader грузит данные ДО рендера",
+            "// Компонент рендерится уже с данными — нет пустого экрана",
+            "",
+            "// router.tsx",
+            "{",
+            "  path: '/posts/:id',",
+            "  element: <PostPage />,",
+            "  loader: ({ params }) =>              // запрос ПЕРЕД рендером",
+            "    fetch('/api/posts/' + params.id).then(r => r.json()),",
+            "}",
+            "",
+            "function PostPage() {                  // createBrowserRouter подход",
+            "  const post = useLoaderData()         // данные уже есть",
+            "  return <h1>{post.title}</h1>         // никакого loading state!",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "Это главная причина использовать createBrowserRouter. Данные загружаются параллельно с JS-бандлом страницы — пользователь ждёт меньше."
+        },
+        {
+          title: "Полная структура реального приложения",
+          code: [
+            "// src/router.tsx — весь роутинг в одном файле",
+            "import { createBrowserRouter, redirect } from 'react-router-dom'",
+            "",
+            "// Проверка авторизации (используется в loader-ах)",
+            "function requireAuth() {",
+            "  const token = localStorage.getItem('token')",
+            "  if (!token) throw redirect('/login')",
+            "  return token",
+            "}",
+            "",
+            "export const router = createBrowserRouter([",
+            "  // ── Публичные маршруты ──────────────────────────",
+            "  {",
+            "    path: '/login',",
+            "    element: <LoginPage />,",
+            "    // loader: проверить если уже залогинен — редирект на /",
+            "    loader: () => {",
+            "      if (localStorage.getItem('token')) return redirect('/')",
+            "      return null",
+            "    },",
+            "  },",
+            "",
+            "  // ── Защищённые маршруты (Layout с Outlet) ───────",
+            "  {",
+            "    id:           'root',",
+            "    element:      <RootLayout />,    // Header + Sidebar + Outlet",
+            "    errorElement: <ErrorPage />,     // ловит ошибки всех дочерних",
+            "    loader: async () => {",
+            "      requireAuth()                  // проверка для всей группы",
+            "      return fetch('/api/me').then(r => r.json())  // данные user",
+            "    },",
+            "    children: [",
+            "      { index: true,          element: <HomePage /> },",
+            "",
+            "      // Посты",
+            "      {",
+            "        path: 'posts',",
+            "        element: <PostsLayout />,",   
+            "        children: [",
+            "          {",
+            "            index: true,",
+            "            element: <PostsList />,",
+            "            loader: () => fetch('/api/posts').then(r => r.json()),",
+            "          },",
+            "          {",
+            "            path: ':id',",
+            "            element: <PostDetail />,",
+            "            loader: ({ params }) =>",
+            "              fetch('/api/posts/' + params.id).then(r => r.json()),",
+            "          },",
+            "          {",
+            "            path: 'new',",
+            "            element: <CreatePost />,",
+            "            action: async ({ request }) => {   // обработка формы",
+            "              const data = await request.formData()",
+            "              await api.post('/posts', Object.fromEntries(data))",
+            "              return redirect('/posts')",
+            "            },",
+            "          },",
+            "        ],",
+            "      },",
+            "",
+            "      // Профиль",
+            "      {",
+            "        path: 'profile',",
+            "        element: <ProfilePage />,",
+            "        loader: () => fetch('/api/profile').then(r => r.json()),",
+            "      },",
+            "",
+            "      // Только для admin",
+            "      {",
+            "        path: 'admin',",
+            "        element: <AdminPage />,",
+            "        loader: async () => {",
+            "          const token = requireAuth()",
+            "          const user  = await fetch('/api/me').then(r => r.json())",
+            "          if (user.role !== 'admin') throw redirect('/403')",
+            "          return user",
+            "        },",
+            "      },",
+            "    ],",
+            "  },",
+            "",
+            "  // ── Системные страницы ───────────────────────────",
+            "  { path: '/403', element: <Forbidden /> },",
+            "  { path: '*',    element: <NotFound /> },",
+            "])"
+          ].join("\n"),
+          noteType: "info",
+          note: "Это типичная структура production-приложения: один root loader для авторизации + загрузки user, дочерние loader-ы для данных каждой страницы, action для форм."
+        },
+        {
+          title: "main.tsx — подключение всего вместе",
+          code: [
+            "// main.tsx — финальная сборка",
+            "import React from 'react'",
+            "import ReactDOM from 'react-dom/client'",
+            "import { RouterProvider } from 'react-router-dom'",
+            "import { Provider } from 'react-redux'",
+            "import { store } from './app/store'",
+            "import { router } from './router'",
+            "",
+            "ReactDOM.createRoot(document.getElementById('root')!).render(",
+            "  <React.StrictMode>",
+            "    <Provider store={store}>",
+            "      {/* RouterProvider заменяет BrowserRouter */}",
+            "      <RouterProvider router={router} />",
+            "    </Provider>",
+            "  </React.StrictMode>",
+            ")",
+            "",
+            "// ─── RootLayout.tsx ──────────────────────────────────",
+            "import { Outlet, useNavigation } from 'react-router-dom'",
+            "",
+            "function RootLayout() {",
+            "  // Глобальный лоадер при навигации",
+            "  const navigation = useNavigation()",
+            "  const isLoading  = navigation.state === 'loading'",
+            "",
+            "  // Данные текущего пользователя из root loader",
+            "  const user = useLoaderData() as User",
+            "",
+            "  return (",
+            "    <div>",
+            "      {/* Тонкая полоска прогресса при переходах */}",
+            "      {isLoading && <div className='progress-bar' />}",
+            "",
+            "      <Header user={user} />",
+            "      <main>",
+            "        <Outlet />",
+            "      </main>",
+            "      <Footer />",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Страница PostsList — loader + useFetcher вместе",
+          code: [
+            "// pages/PostsList.tsx — пример реальной страницы",
+            "import {",
+            "  useLoaderData,",
+            "  useFetcher,",
+            "  Link,",
+            "} from 'react-router-dom'",
+            "",
+            "interface Post { id: number; title: string; done: boolean }",
+            "",
+            "function PostsList() {",
+            "  // Данные из loader — уже загружены до рендера",
+            "  const posts = useLoaderData() as Post[]",
+            "",
+            "  return (",
+            "    <div>",
+            "      <h1>Посты</h1>",
+            "      <Link to='new'>+ Создать пост</Link>",
+            "",
+            "      <ul>",
+            "        {posts.map(post => (",
+            "          <PostItem key={post.id} post={post} />",
+            "        ))}",
+            "      </ul>",
+            "    </div>",
+            "  )",
+            "}",
+            "",
+            "// PostItem — inline мутация через useFetcher (без навигации)",
+            "function PostItem({ post }: { post: Post }) {",
+            "  const fetcher = useFetcher()",
+            "",
+            "  // Optimistic UI — показываем новое состояние до ответа сервера",
+            "  const isDone = fetcher.formData",
+            "    ? fetcher.formData.get('done') === 'true'  // оптимистично",
+            "    : post.done                                 // реальные данные",
+            "",
+            "  return (",
+            "    <li>",
+            "      {/* fetcher.Form — не меняет URL */}",
+            "      <fetcher.Form method='post' action={'/posts/' + post.id + '/toggle'}>",
+            "        <input type='hidden' name='done' value={String(!post.done)} />",
+            "        <button type='submit'>",
+            "          {isDone ? '✅' : '⬜'}",
+            "        </button>",
+            "      </fetcher.Form>",
+            "",
+            "      <Link to={'/posts/' + post.id}>{post.title}</Link>",
+            "    </li>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "Вот как всё работает вместе: loader загрузил список → компонент рендерится с данными → useFetcher делает inline-мутации без навигации → URL и страница не меняются."
+        }
+      ]
+    },
+    {
+      label: "Основа",
+      cards: [
+        {
+          title: "Создать роутер (router.tsx)",
+          code: [
+            "import {",
+            "  createBrowserRouter,",
+            "  RouterProvider,",
+            "} from 'react-router-dom'",
+            "",
+            "export const router = createBrowserRouter([",
+            "  {",
+            "    path: '/',",
+            "    element: <Layout />,",
+            "    errorElement: <ErrorPage />,",
+            "    children: [",
+            "      { index: true,        element: <Home /> },",
+            "      { path: 'about',      element: <About /> },",
+            "      { path: 'users/:id',  element: <User /> },",
+            "      { path: '*',          element: <NotFound /> },",
+            "    ],",
+            "  },",
+            "])"
+          ].join("\n")
+        },
+        {
+          title: "main.tsx — подключение",
+          code: [
+            "import { RouterProvider } from 'react-router-dom'",
+            "import { router } from './router'",
+            "",
+            "ReactDOM.createRoot(document.getElementById('root')!).render(",
+            "  <React.StrictMode>",
+            "    <Provider store={store}>",
+            "      <RouterProvider router={router} />",
+            "    </Provider>",
+            "  </React.StrictMode>",
+            ")"
+          ].join("\n"),
+          noteType: "info",
+          note: "BrowserRouter больше не нужен — RouterProvider заменяет его"
+        }
+      ]
+    },
+    {
+      label: "loader — загрузка данных",
+      cards: [
+        {
+          title: "loader — данные до рендера страницы",
+          code: [
+            "// router.tsx",
+            "{",
+            "  path: 'users/:id',",
+            "  element: <User />,",
+            "  loader: async ({ params }) => {",
+            "    const res = await fetch('/api/users/' + params.id)",
+            "    if (!res.ok) throw new Response('Not Found', { status: 404 })",
+            "    return res.json()  // → попадёт в useLoaderData()",
+            "  },",
+            "}",
+            "",
+            "// User.tsx — данные уже готовы при рендере",
+            "import { useLoaderData } from 'react-router-dom'",
+            "",
+            "function User() {",
+            "  const user = useLoaderData() as UserType",
+            "  return <h1>{user.name}</h1>",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "Главное преимущество перед useEffect+fetch: страница рендерится только когда данные уже загружены. Нет мигания пустого экрана."
+        },
+        {
+          title: "useNavigation — состояние загрузки",
+          code: [
+            "import { useNavigation } from 'react-router-dom'",
+            "",
+            "function Layout() {",
+            "  const navigation = useNavigation()",
+            "",
+            "  // navigation.state: 'idle' | 'loading' | 'submitting'",
+            "  const isLoading = navigation.state === 'loading'",
+            "",
+            "  return (",
+            "    <div>",
+            "      {isLoading && <div className='top-loader' />}",
+            "      <Outlet />",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "redirect — редирект из loader",
+          code: [
+            "import { redirect } from 'react-router-dom'",
+            "",
+            "{",
+            "  path: 'dashboard',",
+            "  element: <Dashboard />,",
+            "  loader: async () => {",
+            "    const isAuth = await checkAuth()",
+            "",
+            "    // Редирект прямо из loader — страница не рендерится",
+            "    if (!isAuth) {",
+            "      return redirect('/login')",
+            "    }",
+            "",
+            "    return fetch('/api/dashboard')",
+            "  },",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "action — отправка данных",
+      cards: [
+        {
+          title: "action — обработка форм и мутаций",
+          code: [
+            "import { Form, redirect, useActionData } from 'react-router-dom'",
+            "",
+            "// router.tsx",
+            "{",
+            "  path: 'contacts/new',",
+            "  element: <NewContact />,",
+            "  action: async ({ request }) => {",
+            "    const formData = await request.formData()",
+            "    const name = formData.get('name') as string",
+            "",
+            "    const errors: Record<string, string> = {}",
+            "    if (!name) errors.name = 'Имя обязательно'",
+            "    if (Object.keys(errors).length) return errors",
+            "",
+            "    await createContact({ name })",
+            "    return redirect('/contacts')",
+            "  },",
+            "}",
+            "",
+            "// NewContact.tsx",
+            "function NewContact() {",
+            "  const errors = useActionData() as Record<string, string>",
+            "",
+            "  return (",
+            "    <Form method='post'>",
+            "      <input name='name' />",
+            "      {errors?.name && <p>{errors.name}</p>}",
+            "      <button type='submit'>Создать</button>",
+            "    </Form>",
+            "  )",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "errorElement — обработка ошибок",
+      cards: [
+        {
+          title: "ErrorPage — страница ошибки",
+          code: [
+            "import { useRouteError, isRouteErrorResponse } from 'react-router-dom'",
+            "",
+            "function ErrorPage() {",
+            "  const error = useRouteError()",
+            "",
+            "  // Ошибка из Response (throw new Response(...))",
+            "  if (isRouteErrorResponse(error)) {",
+            "    return (",
+            "      <div>",
+            "        <h1>{error.status} {error.statusText}</h1>",
+            "        <p>{error.data}</p>",
+            "      </div>",
+            "    )",
+            "  }",
+            "",
+            "  // Обычная JS-ошибка (throw new Error(...))",
+            "  const message = error instanceof Error ? error.message : 'Неизвестная ошибка'",
+            "  return <h1>Ошибка: {message}</h1>",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "errorElement ловит ошибки из loader, action и самого компонента. Можно задать для каждого маршрута отдельно."
+        }
+      ]
+    },
+    {
+      label: "Защищённые маршруты (Protected Routes)",
+      cards: [
+        {
+          title: "Способ 1 — redirect из loader (рекомендуемый)",
+          code: [
+            "// router.tsx",
+            "import { redirect } from 'react-router-dom'",
+            "",
+            "// Вспомогательная функция — проверяет авторизацию",
+            "// Можно читать токен из localStorage, cookie, Redux store",
+            "function requireAuth() {",
+            "  const token = localStorage.getItem('token')",
+            "  if (!token) {",
+            "    throw redirect('/login')  // бросаем redirect как исключение",
+            "  }",
+            "  return token",
+            "}",
+            "",
+            "export const router = createBrowserRouter([",
+            "  { path: '/login',  element: <Login /> },",
+            "  { path: '/about',  element: <About /> },  // открытый маршрут",
+            "",
+            "  // Защищённые маршруты — каждый имеет свой loader",
+            "  {",
+            "    path: '/dashboard',",
+            "    element: <Dashboard />,",
+            "    loader: () => requireAuth(),  // ← проверка перед рендером",
+            "  },",
+            "  {",
+            "    path: '/profile',",
+            "    element: <Profile />,",
+            "    loader: async () => {",
+            "      requireAuth()             // сначала проверяем авторизацию",
+            "      return fetch('/api/profile') // потом загружаем данные",
+            "    },",
+            "  },",
+            "])"
+          ].join("\n"),
+          noteType: "success",
+          note: "Это рекомендуемый способ для createBrowserRouter. Редирект происходит ДО рендера компонента — пользователь не увидит даже вспышки защищённой страницы."
+        },
+        {
+          title: "Способ 2 — общий Layout-loader для группы маршрутов",
+          code: [
+            "// router.tsx — один loader защищает всю группу дочерних маршрутов",
+            "import { redirect } from 'react-router-dom'",
+            "",
+            "export const router = createBrowserRouter([",
+            "  { path: '/login', element: <Login /> },",
+            "",
+            "  {",
+            "    // Этот маршрут не имеет path — только element и loader",
+            "    // Работает как 'группирующий' Layout для защиты",
+            "    element: <AuthLayout />,",
+            "    loader: async () => {",
+            "      const token = localStorage.getItem('token')",
+            "      if (!token) return redirect('/login')",
+            "",
+            "      // Загружаем данные текущего пользователя один раз",
+            "      // для всех дочерних маршрутов",
+            "      const res = await fetch('/api/me', {",
+            "        headers: { Authorization: 'Bearer ' + token }",
+            "      })",
+            "      if (!res.ok) return redirect('/login')",
+            "      return res.json()  // { id, name, role }",
+            "    },",
+            "    children: [",
+            "      // Все эти маршруты защищены автоматически",
+            "      { path: '/dashboard', element: <Dashboard /> },",
+            "      { path: '/profile',   element: <Profile /> },",
+            "      { path: '/settings',  element: <Settings /> },",
+            "      { path: '/admin',     element: <Admin /> },",
+            "    ],",
+            "  },",
+            "])",
+            "",
+            "// AuthLayout.tsx — просто рендерит дочерний маршрут",
+            "function AuthLayout() {",
+            "  return <Outlet />  // ← данные пользователя доступны через useRouteLoaderData",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "Способ 2 удобнее когда много защищённых маршрутов — loader срабатывает один раз на всю группу, а не в каждом маршруте отдельно."
+        },
+        {
+          title: "Читать данные пользователя в дочерних маршрутах",
+          code: [
+            "// router.tsx — задаём id группирующему маршруту",
+            "{",
+            "  id: 'auth',          // ← важно: уникальный id",
+            "  element: <AuthLayout />,",
+            "  loader: async () => {",
+            "    const token = localStorage.getItem('token')",
+            "    if (!token) return redirect('/login')",
+            "    return fetch('/api/me').then(r => r.json())",
+            "  },",
+            "  children: [",
+            "    { path: '/dashboard', element: <Dashboard /> },",
+            "    { path: '/profile',   element: <Profile /> },",
+            "  ],",
+            "}",
+            "",
+            "// Dashboard.tsx — читаем user из loader родителя",
+            "import { useRouteLoaderData } from 'react-router-dom'",
+            "",
+            "interface AuthData { id: number; name: string; role: string }",
+            "",
+            "function Dashboard() {",
+            "  // Получаем данные по id маршрута-родителя",
+            "  const user = useRouteLoaderData('auth') as AuthData",
+            "",
+            "  return (",
+            "    <div>",
+            "      <h1>Привет, {user.name}!</h1>",
+            "      {user.role === 'admin' && <AdminPanel />}",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Защита по роли (авторизация)",
+          code: [
+            "// Не только 'залогинен или нет', но и 'есть ли нужная роль'",
+            "",
+            "// router.tsx",
+            "import { redirect } from 'react-router-dom'",
+            "",
+            "async function requireRole(role: string) {",
+            "  const token = localStorage.getItem('token')",
+            "  if (!token) throw redirect('/login')",
+            "",
+            "  const res  = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } })",
+            "  const user = await res.json()",
+            "",
+            "  if (user.role !== role) {",
+            "    throw redirect('/403')  // нет нужной роли — на страницу ошибки",
+            "  }",
+            "",
+            "  return user",
+            "}",
+            "",
+            "{",
+            "  path: '/admin',",
+            "  element: <AdminPanel />,",
+            "  loader: () => requireRole('admin'),  // только для admin",
+            "}",
+            "",
+            "{",
+            "  path: '/moderator',",
+            "  element: <ModeratorPanel />,",
+            "  loader: () => requireRole('moderator'),",
+            "}",
+            "",
+            "// Страница 403",
+            "{ path: '/403', element: <Forbidden /> }"
+          ].join("\n"),
+          noteType: "info",
+          note: "Защита по роли в loader — надёжнее чем прятать кнопки в UI. Пользователь не сможет попасть на /admin даже если вручную введёт URL."
+        },
+        {
+          title: "Сохранить URL куда шёл пользователь (returnUrl)",
+          code: [
+            "// router.tsx — сохраняем исходный URL в redirect",
+            "import { redirect } from 'react-router-dom'",
+            "",
+            "function requireAuth({ request }: { request: Request }) {",
+            "  const token = localStorage.getItem('token')",
+            "  if (!token) {",
+            "    // Сохраняем URL куда хотел попасть пользователь",
+            "    const url = new URL(request.url)",
+            "    const returnTo = url.pathname + url.search",
+            "    throw redirect('/login?returnTo=' + encodeURIComponent(returnTo))",
+            "  }",
+            "  return token",
+            "}",
+            "",
+            "// login route — передаём request из loader",
+            "{",
+            "  path: '/dashboard',",
+            "  loader: ({ request }) => requireAuth({ request }),",
+            "  element: <Dashboard />,",
+            "}",
+            "",
+            "// Login.tsx — после успешного входа редиректим обратно",
+            "function Login() {",
+            "  const [params] = useSearchParams()",
+            "  const navigate  = useNavigate()",
+            "",
+            "  const handleLogin = async (data: LoginData) => {",
+            "    await loginUser(data)  // сохраняет токен",
+            "    const returnTo = params.get('returnTo') ?? '/dashboard'",
+            "    navigate(returnTo, { replace: true })",
+            "  }",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "returnUrl — стандартный UX-паттерн. Пользователь хотел открыть /settings, его перебросило на /login — после входа он попадает именно на /settings, а не на главную."
+        }
+      ]
+    },
+    {
+      label: "useFetcher — запросы без навигации",
+      cards: [
+        {
+          title: "useFetcher — базовое использование",
+          code: [
+            "// useFetcher позволяет вызывать loader/action",
+            "// БЕЗ перехода на другую страницу",
+            "// Идеален для: лайков, inline-редактирования, виджетов",
+            "",
+            "import { useFetcher } from 'react-router-dom'",
+            "",
+            "function LikeButton({ postId }: { postId: number }) {",
+            "  const fetcher = useFetcher()",
+            "",
+            "  // fetcher.state: 'idle' | 'loading' | 'submitting'",
+            "  const isLiking = fetcher.state !== 'idle'",
+            "",
+            "  return (",
+            "    // fetcher.Form — отправляет в action маршрута без навигации",
+            "    <fetcher.Form method='post' action={'/posts/' + postId + '/like'}>",
+            "      <button type='submit' disabled={isLiking}>",
+            "        {isLiking ? '...' : '❤️ Лайк'}",
+            "      </button>",
+            "    </fetcher.Form>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "useFetcher — один из самых мощных инструментов React Router v6.4+. Вся магия: запрос идёт, а URL и страница не меняются."
+        },
+        {
+          title: "fetcher.load — загрузить данные без перехода",
+          code: [
+            "import { useFetcher } from 'react-router-dom'",
+            "",
+            "// Например: поиск с автодополнением",
+            "function SearchCombobox() {",
+            "  const fetcher = useFetcher()",
+            "",
+            "  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {",
+            "    // fetcher.load вызывает loader маршрута без перехода",
+            "    fetcher.load('/api/search?q=' + e.target.value)",
+            "  }",
+            "",
+            "  // fetcher.data — данные из loader",
+            "  const results = fetcher.data as SearchResult[] ?? []",
+            "",
+            "  return (",
+            "    <div>",
+            "      <input onChange={handleChange} placeholder='Поиск...' />",
+            "      {fetcher.state === 'loading' && <p>Ищу...</p>}",
+            "      <ul>",
+            "        {results.map(r => <li key={r.id}>{r.title}</li>)}",
+            "      </ul>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "fetcher.submit — программная отправка",
+          code: [
+            "import { useFetcher } from 'react-router-dom'",
+            "",
+            "function TodoItem({ todo }: { todo: Todo }) {",
+            "  const fetcher = useFetcher()",
+            "",
+            "  // Переключить статус одним кликом — без Form",
+            "  const toggleDone = () => {",
+            "    fetcher.submit(",
+            "      { id: String(todo.id), done: String(!todo.done) },",
+            "      { method: 'post', action: '/todos/toggle' }",
+            "    )",
+            "  }",
+            "",
+            "  // Optimistic UI — сразу показываем новое состояние",
+            "  // не дожидаясь ответа сервера",
+            "  const optimisticDone =",
+            "    fetcher.state !== 'idle'",
+            "      ? !todo.done          // ждём ответа — показываем перевёрнутое",
+            "      : todo.done           // ответ получен — используем реальные данные",
+            "",
+            "  return (",
+            "    <li onClick={toggleDone} style={{ opacity: fetcher.state !== 'idle' ? 0.6 : 1 }}>",
+            "      {optimisticDone ? '✅' : '⬜'} {todo.text}",
+            "    </li>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "Этот паттерн — Optimistic UI через useFetcher — используется в больших приложениях (Remix, Linear, Notion) для мгновенного отклика UI"
+        },
+        {
+          title: "Несколько fetcher-ов одновременно",
+          code: [
+            "// Каждый useFetcher() — независимый экземпляр",
+            "// Можно удалять несколько элементов параллельно",
+            "",
+            "function PostCard({ post }: { post: Post }) {",
+            "  const deleteFetcher = useFetcher()",
+            "  const likeFetcher   = useFetcher()",
+            "",
+            "  const isDeleting = deleteFetcher.state !== 'idle'",
+            "  const isLiking   = likeFetcher.state   !== 'idle'",
+            "",
+            "  if (isDeleting) return null  // уже удаляется — скрыть",
+            "",
+            "  return (",
+            "    <div>",
+            "      <h3>{post.title}</h3>",
+            "",
+            "      <likeFetcher.Form method='post' action={'/posts/' + post.id + '/like'}>",
+            "        <button disabled={isLiking}>❤️</button>",
+            "      </likeFetcher.Form>",
+            "",
+            "      <deleteFetcher.Form method='post' action={'/posts/' + post.id + '/delete'}>",
+            "        <button disabled={isDeleting}>🗑️</button>",
+            "      </deleteFetcher.Form>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "useSubmit — программная отправка формы",
+      cards: [
+        {
+          title: "useSubmit — базовое использование",
+          code: [
+            "import { useSubmit, Form } from 'react-router-dom'",
+            "",
+            "function SearchForm() {",
+            "  const submit = useSubmit()",
+            "",
+            "  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {",
+            "    // Отправляем форму при каждом изменении инпута",
+            "    // Без useSubmit пришлось бы писать onSubmit и e.preventDefault()",
+            "    submit(e.currentTarget.form)  // передаём форму целиком",
+            "  }",
+            "",
+            "  return (",
+            "    <Form method='get'>",
+            "      <input name='q' onChange={handleChange} />",
+            "    </Form>",
+            "  )",
+            "}",
+            "",
+            "// Или отправить данные напрямую (не из формы)",
+            "const submit = useSubmit()",
+            "",
+            "submit(",
+            "  { userId: '42', action: 'ban' },    // данные",
+            "  { method: 'post', action: '/admin' } // настройки",
+            ")"
+          ].join("\n")
+        },
+        {
+          title: "useSubmit — автосохранение (debounce)",
+          code: [
+            "import { useSubmit } from 'react-router-dom'",
+            "",
+            "function AutoSaveForm() {",
+            "  const submit = useSubmit()",
+            "",
+            "  const handleChange = (e: React.ChangeEvent<HTMLFormElement>) => {",
+            "    const form = e.currentTarget",
+            "",
+            "    // Debounce — отправлять не чаще чем раз в 500мс",
+            "    clearTimeout((window as any)._saveTimer)",
+            "    ;(window as any)._saveTimer = setTimeout(() => {",
+            "      submit(form, { replace: true })  // replace: не создавать запись в истории",
+            "    }, 500)",
+            "  }",
+            "",
+            "  return (",
+            "    // onChange на форме — срабатывает на любое изменение внутри",
+            "    <Form method='post' onChange={handleChange}>",
+            "      <input name='title' defaultValue='Заголовок' />",
+            "      <textarea name='body' defaultValue='Текст' />",
+            "      <p>Сохраняется автоматически...</p>",
+            "    </Form>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "replace: true в submit означает что при автосохранении не создаётся новая запись в истории браузера. Кнопка Назад работает нормально."
+        }
+      ]
+    },
+    {
+      label: "useBlocker и useBeforeUnload — предупреждение об уходе",
+      cards: [
+        {
+          title: "useBlocker — блокировать навигацию",
+          code: [
+            "import { useBlocker } from 'react-router-dom'",
+            "",
+            "function EditForm() {",
+            "  const [isDirty, setIsDirty] = useState(false)  // форма изменена?",
+            "",
+            "  // Блокируем навигацию если есть несохранённые изменения",
+            "  const blocker = useBlocker(",
+            "    ({ currentLocation, nextLocation }) =>",
+            "      isDirty && currentLocation.pathname !== nextLocation.pathname",
+            "  )",
+            "",
+            "  return (",
+            "    <div>",
+            "      <Form onChange={() => setIsDirty(true)}>",
+            "        <input name='title' />",
+            "        <button type='submit'>Сохранить</button>",
+            "      </Form>",
+            "",
+            "      {/* Кастомный диалог подтверждения */}",
+            "      {blocker.state === 'blocked' && (",
+            "        <div className='modal'>",
+            "          <p>Есть несохранённые изменения. Уйти?</p>",
+            "          <button onClick={() => blocker.proceed()}>Уйти</button>",
+            "          <button onClick={() => blocker.reset()}>Остаться</button>",
+            "        </div>",
+            "      )}",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "blocker.state: 'unblocked' | 'blocked' | 'proceeding'. Используй blocker.proceed() для подтверждения и blocker.reset() для отмены."
+        },
+        {
+          title: "useBeforeUnload — при закрытии вкладки",
+          code: [
+            "import { useBeforeUnload } from 'react-router-dom'",
+            "import { useCallback } from 'react'",
+            "",
+            "function Editor() {",
+            "  const [content, setContent] = useState('')",
+            "",
+            "  // Предупредить при закрытии/перезагрузке вкладки браузера",
+            "  useBeforeUnload(",
+            "    useCallback(",
+            "      (e) => {",
+            "        if (content) {",
+            "          e.preventDefault()",
+            "          // Браузер покажет стандартный диалог:",
+            "          // 'Изменения могут не сохраниться. Покинуть страницу?'",
+            "          e.returnValue = ''",
+            "        }",
+            "      },",
+            "      [content]",
+            "    )",
+            "  )",
+            "",
+            "  return <textarea value={content} onChange={e => setContent(e.target.value)} />",
+            "}",
+            "",
+            "// ⚠️ useBeforeUnload — только для закрытия вкладки",
+            "// Для блокировки навигации внутри SPA — используй useBlocker"
+          ].join("\n"),
+          noteType: "danger",
+          note: "Нельзя задать свой текст диалога — браузеры намеренно игнорируют кастомный текст из соображений безопасности."
+        }
+      ]
+    },
+    {
+      label: "Продвинутые хуки",
+      cards: [
+        {
+          title: "useMatches — все совпавшие маршруты",
+          code: [
+            "import { useMatches } from 'react-router-dom'",
+            "",
+            "// useMatches возвращает массив ВСЕХ совпавших маршрутов",
+            "// (включая вложенные Layout-маршруты)",
+            "",
+            "// Паттерн: хлебные крошки (breadcrumbs)",
+            "// router.tsx — добавляем handle к маршрутам",
+            "{",
+            "  path: '/',",
+            "  element: <Layout />,",
+            "  handle: { crumb: () => <Link to='/'>Главная</Link> },",
+            "  children: [",
+            "    {",
+            "      path: 'posts',",
+            "      element: <Posts />,",
+            "      handle: { crumb: () => <Link to='/posts'>Посты</Link> },",
+            "      children: [",
+            "        {",
+            "          path: ':id',",
+            "          element: <Post />,",
+            "          handle: { crumb: (data: Post) => data.title },",
+            "        }",
+            "      ]",
+            "    }",
+            "  ]",
+            "}",
+            "",
+            "// Breadcrumbs.tsx",
+            "function Breadcrumbs() {",
+            "  const matches = useMatches()",
+            "",
+            "  const crumbs = matches",
+            "    .filter(m => Boolean((m.handle as any)?.crumb))",
+            "    .map(m => (m.handle as any).crumb(m.data))",
+            "",
+            "  return (",
+            "    <nav>",
+            "      {crumbs.map((crumb, i) => (",
+            "        <span key={i}>{crumb} {i < crumbs.length - 1 && ' / '}</span>",
+            "      ))}",
+            "    </nav>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "handle — произвольные метаданные маршрута. Через useMatches можно собрать breadcrumbs, заголовки страниц, права доступа — без пробрасывания через props."
+        },
+        {
+          title: "useRouteLoaderData — данные любого маршрута",
+          code: [
+            "// Доступ к данным loader любого СОВПАВШЕГО маршрута",
+            "// Не только текущего, но и родительского Layout-маршрута",
+            "",
+            "// router.tsx — даём маршруту id",
+            "{",
+            "  id: 'root',               // ← важно: задать id",
+            "  path: '/',",
+            "  element: <Layout />,",
+            "  loader: async () => {",
+            "    const user = await getCurrentUser()",
+            "    return { user }",
+            "  },",
+            "  children: [",
+            "    { path: 'dashboard', element: <Dashboard /> },",
+            "  ]",
+            "}",
+            "",
+            "// Dashboard.tsx — читаем данные из loader РОДИТЕЛЯ",
+            "import { useRouteLoaderData } from 'react-router-dom'",
+            "",
+            "function Dashboard() {",
+            "  // Получаем данные из loader маршрута с id='root'",
+            "  const { user } = useRouteLoaderData('root') as { user: User }",
+            "",
+            "  return <h1>Привет, {user.name}!</h1>",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "useRouteLoaderData('id') vs useLoaderData(): useLoaderData читает СВОЙ loader, useRouteLoaderData читает loader ЛЮБОГО совпавшего маршрута по его id."
+        },
+        {
+          title: "useRevalidator — принудительная перезагрузка данных",
+          code: [
+            "import { useRevalidator } from 'react-router-dom'",
+            "",
+            "// Перезапустить все активные loader-ы текущей страницы",
+            "// Полезно: WebSocket получил обновление, нужно обновить данные",
+            "",
+            "function Dashboard() {",
+            "  const revalidator = useRevalidator()",
+            "",
+            "  useEffect(() => {",
+            "    // Например: обновляем каждые 30 секунд",
+            "    const interval = setInterval(() => {",
+            "      // Не перезапрашиваем если уже идёт загрузка",
+            "      if (revalidator.state === 'idle') {",
+            "        revalidator.revalidate()",
+            "      }",
+            "    }, 30_000)",
+            "    return () => clearInterval(interval)",
+            "  }, [revalidator])",
+            "",
+            "  return (",
+            "    <div>",
+            "      <h1>Дашборд</h1>",
+            "      {revalidator.state === 'loading' && <p>Обновляю данные...</p>}",
+            "      <button onClick={() => revalidator.revalidate()}>",
+            "        Обновить",
+            "      </button>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "useNavigate с ViewTransition API",
+          code: [
+            "import { useNavigate } from 'react-router-dom'",
+            "",
+            "function PostCard({ post }: { post: Post }) {",
+            "  const navigate = useNavigate()",
+            "",
+            "  const handleClick = () => {",
+            "    // unstable_viewTransition — плавная анимация перехода",
+            "    // Использует нативный View Transitions API браузера",
+            "    navigate('/posts/' + post.id, {",
+            "      unstable_viewTransition: true,",
+            "    })",
+            "  }",
+            "",
+            "  return <div onClick={handleClick}>{post.title}</div>",
+            "}",
+            "",
+            "// CSS — анимация перехода",
+            "// @keyframes fade-in  { from { opacity: 0 } to { opacity: 1 } }",
+            "// @keyframes fade-out { from { opacity: 1 } to { opacity: 0 } }",
+            "//",
+            "// ::view-transition-old(root) { animation: fade-out 0.2s ease }",
+            "// ::view-transition-new(root) { animation: fade-in  0.2s ease }"
+          ].join("\n"),
+          noteType: "info",
+          note: "View Transitions API — нативные анимации переходов между страницами. Поддерживается в Chrome 111+. Пока помечен unstable_ но активно используется."
+        },
+        {
+          title: "defer + Await — стриминг медленных данных",
+          code: [
+            "import { defer, Await } from 'react-router-dom'",
+            "import { Suspense } from 'react'",
+            "",
+            "// router.tsx — defer позволяет вернуть промис",
+            "// Страница рендерится СРАЗУ, медленные данные подгружаются потом",
+            "{",
+            "  path: 'dashboard',",
+            "  element: <Dashboard />,",
+            "  loader: async () => {",
+            "    // Быстрые данные — ждём",
+            "    const user = await getUser()",
+            "",
+            "    // Медленные данные — НЕ ждём, передаём промис",
+            "    const statsPromise    = getStats()        // медленный запрос",
+            "    const activityPromise = getActivity()     // тоже медленный",
+            "",
+            "    return defer({ user, statsPromise, activityPromise })",
+            "  }",
+            "}",
+            "",
+            "// Dashboard.tsx",
+            "function Dashboard() {",
+            "  const { user, statsPromise } = useLoaderData() as any",
+            "",
+            "  return (",
+            "    <div>",
+            "      <h1>Привет, {user.name}!</h1>",
+            "",
+            "      {/* Suspense + Await — рендерим как только промис resolve */}",
+            "      <Suspense fallback={<StatsLoader />}>",
+            "        <Await resolve={statsPromise}>",
+            "          {(stats) => <StatsWidget stats={stats} />}",
+            "        </Await>",
+            "      </Suspense>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "defer + Await — паттерн для страниц где часть данных быстрая, часть медленная. Пользователь видит страницу сразу, виджеты появляются по мере загрузки."
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 3. Redux + RTK
+// ════════════════════════════════════════════════════════════
+{
+  id: "redux", label: "Redux + RTK", color: "#8b5cf6",
+  groups: [
+    {
+      label: "Установка и базовый slice",
+      cards: [
+        {
+          title: "Установка",
+          code: "npm install @reduxjs/toolkit react-redux"
+        },
+        {
+          title: "counterSlice.ts — создание slice",
+          code: [
+            "import { createSlice, PayloadAction } from '@reduxjs/toolkit'",
+            "",
+            "interface CounterState {",
+            "  value: number",
+            "  status: 'idle' | 'loading' | 'error'",
+            "}",
+            "",
+            "const initialState: CounterState = {",
+            "  value: 0,",
+            "  status: 'idle',",
+            "}",
+            "",
+            "export const counterSlice = createSlice({",
+            "  name: 'counter',",
+            "  initialState,",
+            "  reducers: {",
+            "    increment: (state) => { state.value += 1 },",
+            "    decrement: (state) => { state.value -= 1 },",
+            "",
+            "    // PayloadAction<T> — тип передаваемых данных",
+            "    incrementBy: (state, action: PayloadAction<number>) => {",
+            "      state.value += action.payload",
+            "    },",
+            "",
+            "    reset: () => initialState,  // сброс к начальному состоянию",
+            "  },",
+            "})",
+            "",
+            "export const { increment, decrement, incrementBy, reset } = counterSlice.actions",
+            "export default counterSlice.reducer"
+          ].join("\n"),
+          noteType: "info",
+          note: "RTK использует Immer внутри — можно мутировать state напрямую. state.value += 1 — это нормально!"
+        }
+      ]
+    },
+    {
+      label: "Store",
+      cards: [
+        {
+          title: "app/store.ts",
+          code: [
+            "import { configureStore } from '@reduxjs/toolkit'",
+            "import counterReducer from '../features/counter/counterSlice'",
+            "import postsReducer   from '../features/posts/postsSlice'",
+            "",
+            "export const store = configureStore({",
+            "  reducer: {",
+            "    counter: counterReducer,",
+            "    posts:   postsReducer,",
+            "    // RTK Query API добавляется сюда же (см. вкладку RTK Query)",
+            "  },",
+            "})",
+            "",
+            "export type RootState   = ReturnType<typeof store.getState>",
+            "export type AppDispatch = typeof store.dispatch"
+          ].join("\n")
+        },
+        {
+          title: "app/hooks.ts — типизированные хуки (Best Practice)",
+          code: [
+            "import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux'",
+            "import type { RootState, AppDispatch } from './store'",
+            "",
+            "// Используй ЭТИ хуки вместо голых useDispatch/useSelector",
+            "// Они знают типы store — не нужно писать <RootState> каждый раз",
+            "export const useAppDispatch = () => useDispatch<AppDispatch>()",
+            "export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector",
+            "",
+            "// Использование в компоненте:",
+            "// const dispatch = useAppDispatch()",
+            "// const count    = useAppSelector(s => s.counter.value)"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Async Thunks — асинхронные операции",
+      cards: [
+        {
+          title: "createAsyncThunk — запросы к API",
+          code: [
+            "import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'",
+            "",
+            "interface Post { id: number; title: string }",
+            "interface PostsState {",
+            "  items: Post[]",
+            "  status: 'idle' | 'loading' | 'succeeded' | 'failed'",
+            "  error: string | null",
+            "}",
+            "",
+            "// 1. Создаём thunk",
+            "// Аргументы: <ТипВозврата, ТипАргумента>",
+            "export const fetchPosts = createAsyncThunk<Post[], void>(",
+            "  'posts/fetchAll',           // уникальное имя",
+            "  async () => {",
+            "    const res = await fetch('https://jsonplaceholder.typicode.com/posts')",
+            "    return res.json()",
+            "  }",
+            ")",
+            "",
+            "// 2. Обрабатываем в slice через extraReducers",
+            "const postsSlice = createSlice({",
+            "  name: 'posts',",
+            "  initialState: { items: [], status: 'idle', error: null } as PostsState,",
+            "  reducers: {},",
+            "  extraReducers: (builder) => {",
+            "    builder",
+            "      .addCase(fetchPosts.pending, (state) => {",
+            "        state.status = 'loading'",
+            "      })",
+            "      .addCase(fetchPosts.fulfilled, (state, action) => {",
+            "        state.status = 'succeeded'",
+            "        state.items = action.payload",
+            "      })",
+            "      .addCase(fetchPosts.rejected, (state, action) => {",
+            "        state.status = 'failed'",
+            "        state.error = action.error.message ?? 'Ошибка'",
+            "      })",
+            "  },",
+            "})",
+            "",
+            "export default postsSlice.reducer"
+          ].join("\n"),
+          noteType: "info",
+          note: "createAsyncThunk автоматически создаёт 3 action: pending / fulfilled / rejected"
+        },
+        {
+          title: "Использование thunk в компоненте",
+          code: [
+            "import { useEffect } from 'react'",
+            "import { useAppDispatch, useAppSelector } from '../../app/hooks'",
+            "import { fetchPosts } from './postsSlice'",
+            "",
+            "function PostsList() {",
+            "  const dispatch = useAppDispatch()",
+            "  const { items, status, error } = useAppSelector(s => s.posts)",
+            "",
+            "  useEffect(() => {",
+            "    // Загружаем только если ещё не загружали",
+            "    if (status === 'idle') {",
+            "      dispatch(fetchPosts())",
+            "    }",
+            "  }, [status, dispatch])",
+            "",
+            "  if (status === 'loading') return <p>Загрузка...</p>",
+            "  if (status === 'failed')  return <p>Ошибка: {error}</p>",
+            "",
+            "  return (",
+            "    <ul>",
+            "      {items.map(p => <li key={p.id}>{p.title}</li>)}",
+            "    </ul>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "createAsyncThunk с обработкой ошибки",
+          code: [
+            "export const createPost = createAsyncThunk<",
+            "  Post,           // тип возврата при успехе",
+            "  Partial<Post>,  // тип аргумента",
+            "  { rejectValue: string }  // тип ошибки",
+            ">(",
+            "  'posts/create',",
+            "  async (postData, { rejectWithValue }) => {",
+            "    try {",
+            "      const res = await fetch('/api/posts', {",
+            "        method: 'POST',",
+            "        headers: { 'Content-Type': 'application/json' },",
+            "        body: JSON.stringify(postData),",
+            "      })",
+            "      if (!res.ok) return rejectWithValue('Ошибка сервера')",
+            "      return res.json()",
+            "    } catch (e) {",
+            "      return rejectWithValue('Нет соединения')",
+            "    }",
+            "  }",
+            ")"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Selectors — извлечение данных",
+      cards: [
+        {
+          title: "Selectors — выносить логику из компонентов",
+          code: [
+            "// postsSlice.ts — объявляем селекторы рядом со slice",
+            "export const selectAllPosts    = (state: RootState) => state.posts.items",
+            "export const selectPostsStatus = (state: RootState) => state.posts.status",
+            "export const selectPostById    = (id: number) =>",
+            "  (state: RootState) => state.posts.items.find(p => p.id === id)",
+            "",
+            "// В компоненте — чисто и понятно",
+            "const posts  = useAppSelector(selectAllPosts)",
+            "const status = useAppSelector(selectPostsStatus)",
+            "const post   = useAppSelector(selectPostById(42))"
+          ].join("\n"),
+          noteType: "success",
+          note: "Хорошая практика: выносить селекторы в файл slice, а не писать логику прямо в useAppSelector()"
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 4. RTK QUERY
+// ════════════════════════════════════════════════════════════
+{
+  id: "rtk", label: "RTK Query", color: "#06b6d4",
+  groups: [
+    {
+      label: "Создание API",
+      cards: [
+        {
+          title: "postsApi.ts — базовая настройка",
+          code: [
+            "import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'",
+            "",
+            "interface Post { id: number; title: string; body: string; userId: number }",
+            "",
+            "export const postsApi = createApi({",
+            "  reducerPath: 'postsApi',",
+            "  baseQuery: fetchBaseQuery({",
+            "    baseUrl: 'https://jsonplaceholder.typicode.com',",
+            "  }),",
+            "  endpoints: (builder) => ({",
+            "",
+            "    // GET /posts",
+            "    getPosts: builder.query<Post[], void>({",
+            "      query: () => '/posts',",
+            "    }),",
+            "",
+            "    // GET /posts/:id",
+            "    getPostById: builder.query<Post, number>({",
+            "      query: (id) => '/posts/' + id,",
+            "    }),",
+            "",
+            "    // POST /posts",
+            "    createPost: builder.mutation<Post, Partial<Post>>({",
+            "      query: (body) => ({ url: '/posts', method: 'POST', body }),",
+            "    }),",
+            "",
+            "    // PUT /posts/:id",
+            "    updatePost: builder.mutation<Post, { id: number; data: Partial<Post> }>({",
+            "      query: ({ id, data }) => ({",
+            "        url: '/posts/' + id,",
+            "        method: 'PUT',",
+            "        body: data,",
+            "      }),",
+            "    }),",
+            "",
+            "    // DELETE /posts/:id",
+            "    deletePost: builder.mutation<void, number>({",
+            "      query: (id) => ({ url: '/posts/' + id, method: 'DELETE' }),",
+            "    }),",
+            "  }),",
+            "})",
+            "",
+            "export const {",
+            "  useGetPostsQuery,",
+            "  useGetPostByIdQuery,",
+            "  useCreatePostMutation,",
+            "  useUpdatePostMutation,",
+            "  useDeletePostMutation,",
+            "} = postsApi"
+          ].join("\n")
+        },
+        {
+          title: "store.ts — подключение API",
+          code: [
+            "import { configureStore } from '@reduxjs/toolkit'",
+            "import { postsApi } from '../features/posts/postsApi'",
+            "",
+            "export const store = configureStore({",
+            "  reducer: {",
+            "    [postsApi.reducerPath]: postsApi.reducer,",
+            "  },",
+            "  // БЕЗ middleware кеширование и инвалидация не работают!",
+            "  middleware: (getDefault) =>",
+            "    getDefault().concat(postsApi.middleware),",
+            "})"
+          ].join("\n"),
+          noteType: "danger",
+          note: "Забыть добавить middleware — самая частая ошибка. Без него данные не кешируются и теги не работают."
+        }
+      ]
+    },
+    {
+      label: "Query — получение данных",
+      cards: [
+        {
+          title: "useQuery — все возможные поля",
+          code: [
+            "const {",
+            "  data,          // данные ответа (undefined пока грузится)",
+            "  currentData,   // данные текущего запроса (undefined при новых аргументах)",
+            "  isLoading,     // true только при ПЕРВОМ запросе (нет кешированных данных)",
+            "  isFetching,    // true при ЛЮБОМ активном запросе (в т.ч. фоновом)",
+            "  isSuccess,     // true если последний запрос успешен",
+            "  isError,       // true если ошибка",
+            "  error,         // объект ошибки",
+            "  isUninitialized, // true если запрос ещё не запускался",
+            "  refetch,       // функция для ручного повторного запроса",
+            "} = useGetPostsQuery()",
+            "",
+            "// Лучший паттерн отображения:",
+            "if (isLoading)  return <Spinner />",
+            "if (isError)    return <ErrorMessage error={error} />",
+            "if (!data)      return null",
+            "return <PostsList posts={data} />"
+          ].join("\n"),
+          noteType: "info",
+          note: "isLoading vs isFetching: isLoading = нет данных вообще. isFetching = любой запрос в процессе (в т.ч. обновление уже закешированных данных)"
+        },
+        {
+          title: "Опции запроса",
+          code: [
+            "// skip — не выполнять запрос при условии",
+            "const { data } = useGetPostByIdQuery(userId, {",
+            "  skip: !userId,  // не запрашивать если userId = undefined",
+            "})",
+            "",
+            "// pollingInterval — автообновление каждые N мс",
+            "const { data } = useGetPostsQuery(undefined, {",
+            "  pollingInterval: 30_000,  // обновлять каждые 30 секунд",
+            "})",
+            "",
+            "// refetchOnMountOrArgChange — запрашивать при монтировании",
+            "const { data } = useGetPostsQuery(undefined, {",
+            "  refetchOnMountOrArgChange: true,",
+            "})",
+            "",
+            "// selectFromResult — выбрать часть данных (оптимизация рендера)",
+            "const { post } = useGetPostsQuery(undefined, {",
+            "  selectFromResult: ({ data }) => ({",
+            "    post: data?.find(p => p.id === 1)",
+            "  }),",
+            "})"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Кеширование и инвалидация (Tags)",
+      cards: [
+        {
+          title: "providesTags + invalidatesTags",
+          code: [
+            "export const postsApi = createApi({",
+            "  reducerPath: 'postsApi',",
+            "  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),",
+            "",
+            "  // Объявляем теги которые будем использовать",
+            "  tagTypes: ['Post'],",
+            "",
+            "  endpoints: (builder) => ({",
+            "",
+            "    getPosts: builder.query<Post[], void>({",
+            "      query: () => '/posts',",
+            "      // Кешируем под тегом 'Post'",
+            "      // LIST — список всех постов",
+            "      providesTags: (result) =>",
+            "        result",
+            "          ? [",
+            "              ...result.map(p => ({ type: 'Post' as const, id: p.id })),",
+            "              { type: 'Post', id: 'LIST' },",
+            "            ]",
+            "          : [{ type: 'Post', id: 'LIST' }],",
+            "    }),",
+            "",
+            "    getPostById: builder.query<Post, number>({",
+            "      query: (id) => '/posts/' + id,",
+            "      providesTags: (result, error, id) => [{ type: 'Post', id }],",
+            "    }),",
+            "",
+            "    createPost: builder.mutation<Post, Partial<Post>>({",
+            "      query: (body) => ({ url: '/posts', method: 'POST', body }),",
+            "      // После создания — инвалидируем список (перезапросит getPosts)",
+            "      invalidatesTags: [{ type: 'Post', id: 'LIST' }],",
+            "    }),",
+            "",
+            "    deletePost: builder.mutation<void, number>({",
+            "      query: (id) => ({ url: '/posts/' + id, method: 'DELETE' }),",
+            "      // Инвалидируем конкретный пост и список",
+            "      invalidatesTags: (result, error, id) => [{ type: 'Post', id }],",
+            "    }),",
+            "  }),",
+            "})"
+          ].join("\n"),
+          noteType: "success",
+          note: "Tags — главная суперсила RTK Query. После мутации нужные данные автоматически перезапрашиваются."
+        }
+      ]
+    },
+    {
+      label: "Авторизация и заголовки",
+      cards: [
+        {
+          title: "baseQuery с токеном авторизации",
+          code: [
+            "import { fetchBaseQuery } from '@reduxjs/toolkit/query/react'",
+            "import type { RootState } from '../app/store'",
+            "",
+            "const baseQuery = fetchBaseQuery({",
+            "  baseUrl: '/api',",
+            "",
+            "  // Автоматически добавляет токен к каждому запросу",
+            "  prepareHeaders: (headers, { getState }) => {",
+            "    const token = (getState() as RootState).auth.token",
+            "    if (token) {",
+            "      headers.set('Authorization', 'Bearer ' + token)",
+            "    }",
+            "    return headers",
+            "  },",
+            "})"
+          ].join("\n")
+        },
+        {
+          title: "baseQueryWithReauth — авто-обновление токена",
+          code: [
+            "import { fetchBaseQuery, BaseQueryFn } from '@reduxjs/toolkit/query/react'",
+            "",
+            "const baseQuery = fetchBaseQuery({ baseUrl: '/api' })",
+            "",
+            "// Обёртка: при 401 — обновить токен и повторить запрос",
+            "const baseQueryWithReauth: BaseQueryFn = async (args, api, extra) => {",
+            "  let result = await baseQuery(args, api, extra)",
+            "",
+            "  if (result.error?.status === 401) {",
+            "    // Пробуем обновить токен",
+            "    const refresh = await baseQuery('/auth/refresh', api, extra)",
+            "",
+            "    if (refresh.data) {",
+            "      // Сохраняем новый токен",
+            "      api.dispatch(setToken(refresh.data as string))",
+            "      // Повторяем исходный запрос",
+            "      result = await baseQuery(args, api, extra)",
+            "    } else {",
+            "      api.dispatch(logout())",
+            "    }",
+            "  }",
+            "",
+            "  return result",
+            "}",
+            "",
+            "export const api = createApi({",
+            "  baseQuery: baseQueryWithReauth,",
+            "  endpoints: () => ({}),",
+            "})"
+          ].join("\n"),
+          noteType: "info",
+          note: "Этот паттерн используется в production для незаметного обновления access-токена через refresh-токен"
+        }
+      ]
+    },
+    {
+      label: "Mutation — изменение данных",
+      cards: [
+        {
+          title: "useMutation — все возможные поля",
+          code: [
+            "const [",
+            "  createPost,        // функция вызова",
+            "  {",
+            "    isLoading,       // запрос в процессе",
+            "    isSuccess,       // успешно выполнен",
+            "    isError,         // ошибка",
+            "    error,           // объект ошибки",
+            "    data,            // данные ответа",
+            "    reset,           // сбросить состояние",
+            "  }",
+            "] = useCreatePostMutation()",
+            "",
+            "const handleSubmit = async () => {",
+            "  try {",
+            "    // .unwrap() — бросает ошибку если запрос упал",
+            "    const newPost = await createPost({",
+            "      title: 'Заголовок',",
+            "      body: 'Текст',",
+            "      userId: 1,",
+            "    }).unwrap()",
+            "",
+            "    console.log('Создан:', newPost.id)",
+            "  } catch (err) {",
+            "    console.error('Ошибка:', err)",
+            "  }",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "transformResponse — преобразование ответа",
+          code: [
+            "getPosts: builder.query<Post[], void>({",
+            "  query: () => '/posts',",
+            "",
+            "  // Преобразуем данные до кеширования",
+            "  transformResponse: (response: Post[]) => {",
+            "    // Например: нормализуем, фильтруем, сортируем",
+            "    return response",
+            "      .filter(p => p.userId === 1)",
+            "      .sort((a, b) => b.id - a.id)",
+            "  },",
+            "",
+            "  // Преобразуем ошибку",
+            "  transformErrorResponse: (response) => {",
+            "    return { message: 'Ошибка: ' + response.status }",
+            "  },",
+            "})"
+          ].join("\n")
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 5. ПАТТЕРНЫ
+// ════════════════════════════════════════════════════════════
+{
+  id: "patterns", label: "Паттерны", color: "#22c55e",
+  groups: [
+    {
+      label: "Структура проекта",
+      cards: [
+        {
+          title: "Feature-Sliced структура (рекомендуемая)",
+          code: [
+            "src/",
+            "├── app/",
+            "│   ├── store.ts          # configureStore + типы",
+            "│   ├── hooks.ts          # useAppDispatch, useAppSelector",
+            "│   └── router.tsx        # createBrowserRouter",
+            "│",
+            "├── features/             # бизнес-логика по фичам",
+            "│   ├── auth/",
+            "│   │   ├── authSlice.ts",
+            "│   │   ├── authApi.ts    # RTK Query",
+            "│   │   └── LoginForm.tsx",
+            "│   │",
+            "│   └── posts/",
+            "│       ├── postsSlice.ts",
+            "│       ├── postsApi.ts   # RTK Query",
+            "│       ├── PostsList.tsx",
+            "│       └── PostCard.tsx",
+            "│",
+            "├── pages/                # только роутинг + компоновка",
+            "│   ├── HomePage.tsx",
+            "│   ├── PostPage.tsx",
+            "│   └── NotFoundPage.tsx",
+            "│",
+            "├── shared/               # переиспользуемое",
+            "│   ├── ui/               # кнопки, инпуты, модалки",
+            "│   └── lib/              # утилиты",
+            "│",
+            "└── main.tsx"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Паттерны Redux + RTK Query",
+      cards: [
+        {
+          title: "Совместное использование Redux slice + RTK Query",
+          code: [
+            "// authSlice.ts — локальное состояние авторизации",
+            "const authSlice = createSlice({",
+            "  name: 'auth',",
+            "  initialState: { token: null as string | null, user: null },",
+            "  reducers: {",
+            "    setToken: (state, action: PayloadAction<string>) => {",
+            "      state.token = action.payload",
+            "    },",
+            "    logout: (state) => {",
+            "      state.token = null",
+            "      state.user  = null",
+            "    },",
+            "  },",
+            "})",
+            "",
+            "// authApi.ts — запросы к API",
+            "const authApi = createApi({",
+            "  reducerPath: 'authApi',",
+            "  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),",
+            "  endpoints: (builder) => ({",
+            "    login: builder.mutation<{ token: string }, LoginData>({",
+            "      query: (data) => ({ url: '/login', method: 'POST', body: data }),",
+            "    }),",
+            "  }),",
+            "})",
+            "",
+            "// В компоненте — используем и slice, и query",
+            "function LoginForm() {",
+            "  const dispatch    = useAppDispatch()",
+            "  const [login]     = useLoginMutation()",
+            "",
+            "  const handleLogin = async (data: LoginData) => {",
+            "    const { token } = await login(data).unwrap()",
+            "    dispatch(setToken(token))  // сохраняем в slice",
+            "  }",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Оптимистичное обновление (Optimistic Update)",
+          code: [
+            "updatePost: builder.mutation<Post, { id: number; data: Partial<Post> }>({",
+            "  query: ({ id, data }) => ({ url: '/posts/' + id, method: 'PATCH', body: data }),",
+            "",
+            "  // Обновляем UI до ответа сервера",
+            "  onQueryStarted: async ({ id, data }, { dispatch, queryFulfilled }) => {",
+            "    // Патчим кеш немедленно",
+            "    const patch = dispatch(",
+            "      postsApi.util.updateQueryData('getPosts', undefined, (draft) => {",
+            "        const post = draft.find(p => p.id === id)",
+            "        if (post) Object.assign(post, data)",
+            "      })",
+            "    )",
+            "",
+            "    try {",
+            "      await queryFulfilled  // ждём ответ сервера",
+            "    } catch {",
+            "      patch.undo()  // если ошибка — откатываем",
+            "    }",
+            "  },",
+            "})"
+          ].join("\n"),
+          noteType: "info",
+          note: "Optimistic Update — UI обновляется мгновенно, не дожидаясь сервера. При ошибке автоматически откатывается."
+        },
+        {
+          title: "Prefetch — предзагрузка данных",
+          code: [
+            "import { usePrefetch } from '../features/posts/postsApi'",
+            "",
+            "function PostItem({ post }: { post: Post }) {",
+            "  // Получаем функцию предзагрузки",
+            "  const prefetchPost = usePrefetch('getPostById')",
+            "",
+            "  return (",
+            "    <li",
+            "      // При наведении — грузим данные заранее",
+            "      onMouseEnter={() => prefetchPost(post.id)}",
+            "    >",
+            "      <Link to={'/posts/' + post.id}>{post.title}</Link>",
+            "    </li>",
+            "  )",
+            "}",
+            "",
+            "// Когда пользователь кликнет — данные уже в кеше, страница откроется мгновенно"
+          ].join("\n"),
+          noteType: "success",
+          note: "Prefetch значительно ускоряет UX: данные следующей страницы загружаются ещё до того, как пользователь на неё перешёл."
+        }
+      ]
+    }
+  ]
+}
+
+,
+
+// ════════════════════════════════════════════════════════════
+// 6. TYPESCRIPT
+// ════════════════════════════════════════════════════════════
+{
+  id: "ts", label: "TypeScript", color: "#3b82f6",
+  groups: [
+    {
+      label: "React-специфичные типы",
+      cards: [
+        {
+          title: "Основные типы React",
+          code: [
+            "import React, {",
+            "  ReactNode,       // всё что можно рендерить: JSX, строка, число, null...",
+            "  ReactElement,    // только JSX-элемент (не строка, не null)",
+            "  FC,              // Function Component (лучше не использовать — см. ниже)",
+            "  CSSProperties,   // объект стилей для style={}",
+            "  RefObject,       // тип для useRef",
+            "  MutableRefObject,",
+            "  MouseEvent,      // события",
+            "  ChangeEvent,",
+            "  FormEvent,",
+            "  KeyboardEvent,",
+            "} from 'react'",
+            "",
+            "// ReactNode — самый широкий тип для children",
+            "interface Props {",
+            "  children: ReactNode",
+            "  style?: CSSProperties",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "FC<Props> добавляет children автоматически — но в React 18 это убрали. Лучше не использовать FC, а писать обычную функцию с явными Props"
+        },
+        {
+          title: "Типизация Props компонента",
+          code: [
+            "// Интерфейс для props — предпочтительный способ",
+            "interface ButtonProps {",
+            "  label: string",
+            "  onClick: () => void",
+            "  variant?: 'primary' | 'secondary' | 'danger'  // union type",
+            "  disabled?: boolean",
+            "  children?: ReactNode",
+            "  className?: string",
+            "  style?: CSSProperties",
+            "}",
+            "",
+            "// Обычная функция + деструктуризация + дефолтные значения",
+            "function Button({",
+            "  label,",
+            "  onClick,",
+            "  variant = 'primary',",
+            "  disabled = false,",
+            "  children,",
+            "}: ButtonProps) {",
+            "  return (",
+            "    <button",
+            "      onClick={onClick}",
+            "      disabled={disabled}",
+            "      className={'btn btn-' + variant}",
+            "    >",
+            "      {children ?? label}",
+            "    </button>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Расширение нативных HTML-элементов",
+          code: [
+            "// Компонент наследует ВСЕ атрибуты button + свои",
+            "interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {",
+            "  variant?: 'primary' | 'secondary'",
+            "  isLoading?: boolean",
+            "}",
+            "",
+            "function Button({ variant = 'primary', isLoading, children, ...rest }: ButtonProps) {",
+            "  // ...rest — все нативные атрибуты (disabled, type, className, onClick...)",
+            "  return (",
+            "    <button className={'btn-' + variant} disabled={isLoading} {...rest}>",
+            "      {isLoading ? 'Загрузка...' : children}",
+            "    </button>",
+            "  )",
+            "}",
+            "",
+            "// Теперь можно передавать любые атрибуты button:",
+            "<Button variant='primary' type='submit' aria-label='Отправить'>",
+            "  Сохранить",
+            "</Button>"
+          ].join("\n"),
+          noteType: "success",
+          note: "extends HTMLAttributes — лучший способ создать обёртку над нативным элементом. Не нужно перечислять все атрибуты вручную."
+        }
+      ]
+    },
+    {
+      label: "Хуки — типизация",
+      cards: [
+        {
+          title: "useState",
+          code: [
+            "// TypeScript сам выведет тип из начального значения",
+            "const [count, setCount] = useState(0)          // number",
+            "const [name,  setName]  = useState('')         // string",
+            "const [flag,  setFlag]  = useState(false)      // boolean",
+            "",
+            "// Явный тип — когда начальное значение null или undefined",
+            "const [user, setUser] = useState<User | null>(null)",
+            "",
+            "// Массив",
+            "const [posts, setPosts] = useState<Post[]>([])",
+            "",
+            "// Union type",
+            "const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')",
+            "",
+            "// Объект",
+            "interface FormData { email: string; password: string }",
+            "const [form, setForm] = useState<FormData>({ email: '', password: '' })"
+          ].join("\n")
+        },
+        {
+          title: "useRef",
+          code: [
+            "// Ref на DOM-элемент — начальное значение null",
+            "const inputRef  = useRef<HTMLInputElement>(null)",
+            "const divRef    = useRef<HTMLDivElement>(null)",
+            "const buttonRef = useRef<HTMLButtonElement>(null)",
+            "",
+            "// Использование",
+            "useEffect(() => {",
+            "  inputRef.current?.focus()  // ?. — элемент может не существовать",
+            "}, [])",
+            "",
+            "// Ref как изменяемое значение (таймер, предыдущее значение)",
+            "// начальное значение НЕ null → MutableRefObject<number>",
+            "const timerId   = useRef<number>(0)",
+            "const prevValue = useRef<string>('')",
+            "",
+            "// Здесь .current всегда существует — не нужен ?.",
+            "timerId.current = setTimeout(() => {}, 1000)"
+          ].join("\n")
+        },
+        {
+          title: "useReducer",
+          code: [
+            "// Типизируем State и Action",
+            "interface State {",
+            "  count: number",
+            "  step: number",
+            "}",
+            "",
+            "// Discriminated Union — лучший способ типизировать actions",
+            "type Action =",
+            "  | { type: 'increment' }",
+            "  | { type: 'decrement' }",
+            "  | { type: 'setStep'; payload: number }",
+            "  | { type: 'reset' }",
+            "",
+            "function reducer(state: State, action: Action): State {",
+            "  switch (action.type) {",
+            "    case 'increment': return { ...state, count: state.count + state.step }",
+            "    case 'decrement': return { ...state, count: state.count - state.step }",
+            "    case 'setStep':   return { ...state, step: action.payload }",
+            "    case 'reset':     return { count: 0, step: 1 }",
+            "  }",
+            "}",
+            "",
+            "const [state, dispatch] = useReducer(reducer, { count: 0, step: 1 })",
+            "",
+            "dispatch({ type: 'setStep', payload: 5 })"
+          ].join("\n"),
+          noteType: "info",
+          note: "Discriminated Union для actions — TypeScript будет знать что payload доступен только у 'setStep', и подскажет это в IDE"
+        },
+        {
+          title: "useContext",
+          code: [
+            "// 1. Объявляем тип контекста",
+            "interface ThemeContextType {",
+            "  theme: 'light' | 'dark'",
+            "  toggleTheme: () => void",
+            "}",
+            "",
+            "// 2. Создаём контекст (undefined — явная ошибка при использовании без провайдера)",
+            "const ThemeContext = createContext<ThemeContextType | undefined>(undefined)",
+            "",
+            "// 3. Кастомный хук — безопасное использование",
+            "export function useTheme(): ThemeContextType {",
+            "  const ctx = useContext(ThemeContext)",
+            "  if (!ctx) throw new Error('useTheme: нет ThemeProvider в дереве!')",
+            "  return ctx",
+            "}",
+            "",
+            "// 4. Провайдер",
+            "export function ThemeProvider({ children }: { children: ReactNode }) {",
+            "  const [theme, setTheme] = useState<'light' | 'dark'>('light')",
+            "  const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light')",
+            "",
+            "  return (",
+            "    <ThemeContext.Provider value={{ theme, toggleTheme }}>",
+            "      {children}",
+            "    </ThemeContext.Provider>",
+            "  )",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "События (Event Handlers)",
+      cards: [
+        {
+          title: "Типизация событий",
+          code: [
+            "// onClick",
+            "const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {",
+            "  e.preventDefault()",
+            "  console.log(e.currentTarget.id)",
+            "}",
+            "",
+            "// onChange для input",
+            "const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {",
+            "  setValue(e.target.value)",
+            "}",
+            "",
+            "// onChange для select",
+            "const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {",
+            "  setSelected(e.target.value)",
+            "}",
+            "",
+            "// onSubmit для form",
+            "const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {",
+            "  e.preventDefault()",
+            "  const form = e.currentTarget",
+            "  const data = new FormData(form)",
+            "}",
+            "",
+            "// onKeyDown",
+            "const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {",
+            "  if (e.key === 'Enter') submit()",
+            "  if (e.key === 'Escape') clear()",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Тип для обработчика как prop",
+          code: [
+            "// Если функция не возвращает ничего",
+            "interface Props {",
+            "  onClick:    () => void",
+            "  onChange:   (value: string) => void",
+            "  onSelect:   (id: number) => void",
+            "}",
+            "",
+            "// React.MouseEventHandler<T> — готовый тип из React",
+            "interface Props {",
+            "  onClick: React.MouseEventHandler<HTMLButtonElement>",
+            "  onInput: React.ChangeEventHandler<HTMLInputElement>",
+            "}",
+            "",
+            "// Опциональный обработчик",
+            "interface Props {",
+            "  onClose?: () => void",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Дженерики (Generics)",
+      cards: [
+        {
+          title: "Generic компонент",
+          code: [
+            "// Компонент списка — работает с любым типом данных",
+            "interface ListProps<T> {",
+            "  items:      T[]",
+            "  renderItem: (item: T) => ReactNode",
+            "  keyExtractor: (item: T) => string | number",
+            "}",
+            "",
+            "function List<T>({ items, renderItem, keyExtractor }: ListProps<T>) {",
+            "  return (",
+            "    <ul>",
+            "      {items.map(item => (",
+            "        <li key={keyExtractor(item)}>",
+            "          {renderItem(item)}",
+            "        </li>",
+            "      ))}",
+            "    </ul>",
+            "  )",
+            "}",
+            "",
+            "// Использование — TS сам выведет T",
+            "<List",
+            "  items={posts}",
+            "  keyExtractor={p => p.id}",
+            "  renderItem={p => <PostCard post={p} />}",
+            "/>"
+          ].join("\n")
+        },
+        {
+          title: "Generic кастомный хук",
+          code: [
+            "// useFetch — универсальный хук для запросов",
+            "interface FetchState<T> {",
+            "  data:      T | null",
+            "  isLoading: boolean",
+            "  error:     string | null",
+            "}",
+            "",
+            "function useFetch<T>(url: string): FetchState<T> {",
+            "  const [data,      setData]      = useState<T | null>(null)",
+            "  const [isLoading, setIsLoading] = useState(false)",
+            "  const [error,     setError]     = useState<string | null>(null)",
+            "",
+            "  useEffect(() => {",
+            "    setIsLoading(true)",
+            "    fetch(url)",
+            "      .then(r => r.json())",
+            "      .then((d: T) => { setData(d); setIsLoading(false) })",
+            "      .catch(e => { setError(e.message); setIsLoading(false) })",
+            "  }, [url])",
+            "",
+            "  return { data, isLoading, error }",
+            "}",
+            "",
+            "// Использование с явным типом",
+            "const { data, isLoading } = useFetch<User[]>('/api/users')"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Utility Types — готовые утилиты TS",
+      cards: [
+        {
+          title: "Partial, Required, Readonly",
+          code: [
+            "interface User {",
+            "  id:    number",
+            "  name:  string",
+            "  email: string",
+            "  age:   number",
+            "}",
+            "",
+            "// Partial<T> — все поля становятся опциональными",
+            "// Используется для форм редактирования, patch-запросов",
+            "type UserUpdate = Partial<User>",
+            "// { id?: number; name?: string; email?: string; age?: number }",
+            "",
+            "// Required<T> — все поля становятся обязательными",
+            "type FullUser = Required<User>",
+            "",
+            "// Readonly<T> — нельзя изменить поля",
+            "const config: Readonly<User> = { id: 1, name: 'John', email: 'j@j.com', age: 25 }",
+            "// config.name = 'Jane'  ← ошибка TS!"
+          ].join("\n")
+        },
+        {
+          title: "Pick, Omit, Record",
+          code: [
+            "interface User {",
+            "  id: number; name: string; email: string; password: string; role: string",
+            "}",
+            "",
+            "// Pick<T, Keys> — взять только указанные поля",
+            "type UserPreview = Pick<User, 'id' | 'name'>",
+            "// { id: number; name: string }",
+            "",
+            "// Omit<T, Keys> — взять все поля КРОМЕ указанных",
+            "type PublicUser = Omit<User, 'password'>",
+            "// { id, name, email, role }  — без пароля",
+            "",
+            "// Record<Keys, Value> — объект с фиксированными ключами",
+            "type Roles = Record<'admin' | 'user' | 'guest', string[]>",
+            "// { admin: string[]; user: string[]; guest: string[] }",
+            "",
+            "// Пример — словарь пользователей по id",
+            "type UsersMap = Record<number, User>",
+            "const map: UsersMap = { 1: user1, 2: user2 }"
+          ].join("\n")
+        },
+        {
+          title: "ReturnType, Parameters, NonNullable",
+          code: [
+            "// ReturnType<T> — тип возвращаемого значения функции",
+            "function getUser() {",
+            "  return { id: 1, name: 'John', role: 'admin' }",
+            "}",
+            "type User = ReturnType<typeof getUser>",
+            "// { id: number; name: string; role: string }",
+            "",
+            "// Используется для типов store Redux:",
+            "// type RootState = ReturnType<typeof store.getState>",
+            "",
+            "// Parameters<T> — типы аргументов функции",
+            "function createUser(name: string, age: number, role: string) {}",
+            "type CreateUserArgs = Parameters<typeof createUser>",
+            "// [string, number, string]",
+            "",
+            "// NonNullable<T> — убрать null и undefined",
+            "type MaybeUser = User | null | undefined",
+            "type DefiniteUser = NonNullable<MaybeUser>  // User"
+          ].join("\n")
+        },
+        {
+          title: "Discriminated Union — типизация состояний",
+          code: [
+            "// Паттерн для состояний загрузки — лучше чем куча флагов",
+            "type RequestState<T> =",
+            "  | { status: 'idle' }",
+            "  | { status: 'loading' }",
+            "  | { status: 'success'; data: T }",
+            "  | { status: 'error';   message: string }",
+            "",
+            "const [state, setState] = useState<RequestState<User[]>>({ status: 'idle' })",
+            "",
+            "// TypeScript знает что доступно в каждом случае",
+            "if (state.status === 'success') {",
+            "  // state.data доступен только здесь",
+            "  return <UserList users={state.data} />",
+            "}",
+            "if (state.status === 'error') {",
+            "  // state.message доступен только здесь",
+            "  return <Error message={state.message} />",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "Discriminated Union — одна из самых полезных техник TS. Вместо трёх флагов (isLoading, isError, isSuccess) — одна переменная status с гарантией что data есть только при success."
+        }
+      ]
+    },
+    {
+      label: "Type Guards — проверка типов",
+      cards: [
+        {
+          title: "Type Guards — сужение типов",
+          code: [
+            "// typeof guard",
+            "function print(value: string | number) {",
+            "  if (typeof value === 'string') {",
+            "    console.log(value.toUpperCase())  // TS знает: string",
+            "  } else {",
+            "    console.log(value.toFixed(2))     // TS знает: number",
+            "  }",
+            "}",
+            "",
+            "// instanceof guard",
+            "function handleError(error: unknown) {",
+            "  if (error instanceof Error) {",
+            "    console.log(error.message)  // TS знает: Error",
+            "  }",
+            "}",
+            "",
+            "// in guard — проверка наличия поля",
+            "interface Dog { bark: () => void }",
+            "interface Cat { meow: () => void }",
+            "",
+            "function makeSound(animal: Dog | Cat) {",
+            "  if ('bark' in animal) {",
+            "    animal.bark()  // TS знает: Dog",
+            "  } else {",
+            "    animal.meow()  // TS знает: Cat",
+            "  }",
+            "}",
+            "",
+            "// Кастомный type guard — функция-предикат",
+            "function isUser(value: unknown): value is User {",
+            "  return typeof value === 'object' && value !== null && 'id' in value && 'name' in value",
+            "}",
+            "",
+            "const data: unknown = await fetch('/api/user').then(r => r.json())",
+            "if (isUser(data)) {",
+            "  console.log(data.name)  // безопасно!",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Типизация API и данных",
+      cards: [
+        {
+          title: "Типизация ответов API",
+          code: [
+            "// Общий тип для ответа сервера",
+            "interface ApiResponse<T> {",
+            "  data:    T",
+            "  message: string",
+            "  success: boolean",
+            "}",
+            "",
+            "// Тип с пагинацией",
+            "interface PaginatedResponse<T> {",
+            "  items:      T[]",
+            "  total:      number",
+            "  page:       number",
+            "  totalPages: number",
+            "}",
+            "",
+            "// Использование",
+            "type UsersResponse = ApiResponse<User[]>",
+            "type PostsPage     = PaginatedResponse<Post>",
+            "",
+            "// Async функция с типом",
+            "async function fetchUser(id: number): Promise<User> {",
+            "  const res = await fetch('/api/users/' + id)",
+            "  const json: ApiResponse<User> = await res.json()",
+            "  return json.data",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Типизация переменных окружения (Vite)",
+          code: [
+            "// src/vite-env.d.ts — расширяем встроенный интерфейс Vite",
+            "/// <reference types='vite/client' />",
+            "",
+            "interface ImportMetaEnv {",
+            "  readonly VITE_API_URL:      string",
+            "  readonly VITE_APP_TITLE:    string",
+            "  readonly VITE_FIREBASE_KEY: string",
+            "}",
+            "",
+            "interface ImportMeta {",
+            "  readonly env: ImportMetaEnv",
+            "}",
+            "",
+            "// Использование — с автодополнением и без ошибок TS",
+            "const apiUrl = import.meta.env.VITE_API_URL"
+          ].join("\n")
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 7. BEST PRACTICES
+// ════════════════════════════════════════════════════════════
+{
+  id: "bp", label: "Best Practices", color: "#f59e0b",
+  groups: [
+    {
+      label: "React — общие принципы",
+      cards: [
+        {
+          title: "Компоненты — правила хорошего тона",
+          code: [
+            "// ✅ Один компонент — одна ответственность",
+            "// Плохо: компонент делает запрос, трансформирует данные, рендерит UI",
+            "// Хорошо: логика в хуке, компонент только рендерит",
+            "",
+            "// ✅ Выносить логику в кастомные хуки",
+            "function useUserData(id: number) {",
+            "  const { data, isLoading } = useGetUserQuery(id)",
+            "  const fullName = data ? data.firstName + ' ' + data.lastName : ''",
+            "  return { user: data, isLoading, fullName }",
+            "}",
+            "",
+            "// Компонент чистый — только рендеринг",
+            "function UserProfile({ id }: { id: number }) {",
+            "  const { user, isLoading, fullName } = useUserData(id)",
+            "  if (isLoading) return <Spinner />",
+            "  return <h1>{fullName}</h1>",
+            "}",
+            "",
+            "// ✅ Ранний возврат вместо вложенных условий",
+            "// Плохо:",
+            "// if (isLoading) { return <Spinner /> } else { return <Data /> }",
+            "// Хорошо:",
+            "if (isLoading) return <Spinner />",
+            "if (isError)   return <ErrorMsg />",
+            "return <Data />"
+          ].join("\n")
+        },
+        {
+          title: "Ключи (key) в списках",
+          code: [
+            "// ❌ Плохо — индекс массива как ключ",
+            "// При перестановке/удалении элементов React перепутает компоненты",
+            "posts.map((post, index) => <PostCard key={index} post={post} />)",
+            "",
+            "// ✅ Хорошо — уникальный стабильный id",
+            "posts.map(post => <PostCard key={post.id} post={post} />)",
+            "",
+            "// ✅ Если нет id — генерировать при создании данных",
+            "import { nanoid } from '@reduxjs/toolkit'  // уже встроен в RTK",
+            "",
+            "const newTodo = { id: nanoid(), text: 'купить молоко', done: false }",
+            "",
+            "// ❌ Плохо — рендер числа 0 вместо ничего",
+            "{ list.length && <List /> }        // если list = [] → рендерит '0'!",
+            "",
+            "// ✅ Хорошо",
+            "{ list.length > 0 && <List /> }",
+            "{ list.length ? <List /> : null }"
+          ].join("\n"),
+          noteType: "danger",
+          note: "list.length && <Comp /> — классическая ловушка! Если list пустой, React рендерит '0' на экране. Всегда используй list.length > 0 &&"
+        },
+        {
+          title: "useEffect — частые ошибки",
+          code: [
+            "// ❌ Плохо — пустой массив зависимостей, но используем пропс",
+            "useEffect(() => {",
+            "  fetchData(userId)  // userId не в зависимостях!",
+            "}, [])               // не обновится при смене userId",
+            "",
+            "// ✅ Хорошо",
+            "useEffect(() => {",
+            "  fetchData(userId)",
+            "}, [userId])         // перезапустится когда userId изменится",
+            "",
+            "// ✅ Очистка при размонтировании",
+            "useEffect(() => {",
+            "  const timer = setInterval(() => tick(), 1000)",
+            "  return () => clearInterval(timer)  // cleanup!",
+            "}, [])",
+            "",
+            "// ✅ AbortController — отмена запроса",
+            "useEffect(() => {",
+            "  const controller = new AbortController()",
+            "  fetch('/api/data', { signal: controller.signal })",
+            "    .then(r => r.json())",
+            "    .then(setData)",
+            "    .catch(e => { if (e.name !== 'AbortError') setError(e) })",
+            "  return () => controller.abort()  // отменяем если компонент размонтирован",
+            "}, [])"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "React Router — практики",
+      cards: [
+        {
+          title: "Централизованные пути маршрутов",
+          code: [
+            "// shared/lib/routes.ts — все пути в одном месте",
+            "export const ROUTES = {",
+            "  HOME:         '/',",
+            "  LOGIN:        '/login',",
+            "  REGISTER:     '/register',",
+            "  DASHBOARD:    '/dashboard',",
+            "  PROFILE:      '/profile',",
+            "  POST:         (id: number | string) => '/posts/' + id,",
+            "  USER:         (id: number | string) => '/users/' + id,",
+            "} as const",
+            "",
+            "// Использование — нет магических строк",
+            "navigate(ROUTES.DASHBOARD)",
+            "<Link to={ROUTES.POST(post.id)}>Читать</Link>",
+            "",
+            "// ✅ Зачем: если путь изменится — меняешь только в одном месте"
+          ].join("\n"),
+          noteType: "success",
+          note: "Магические строки вида '/dashboard' разбросанные по коду — плохая практика. При переименовании маршрута можно пропустить место."
+        },
+        {
+          title: "Scroll to top при навигации",
+          code: [
+            "// shared/ui/ScrollToTop.tsx",
+            "import { useEffect } from 'react'",
+            "import { useLocation } from 'react-router-dom'",
+            "",
+            "export function ScrollToTop() {",
+            "  const { pathname } = useLocation()",
+            "",
+            "  useEffect(() => {",
+            "    window.scrollTo(0, 0)",
+            "  }, [pathname])",
+            "",
+            "  return null",
+            "}",
+            "",
+            "// Layout.tsx — добавить один раз",
+            "function Layout() {",
+            "  return (",
+            "    <>",
+            "      <ScrollToTop />",
+            "      <Header />",
+            "      <Outlet />",
+            "    </>",
+            "  )",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Redux — практики",
+      cards: [
+        {
+          title: "Нормализация данных",
+          code: [
+            "// ❌ Плохо — массив, поиск по id = O(n)",
+            "state.posts = [",
+            "  { id: 1, title: 'Пост 1' },",
+            "  { id: 2, title: 'Пост 2' },",
+            "]",
+            "const post = state.posts.find(p => p.id === id)  // медленно",
+            "",
+            "// ✅ Хорошо — нормализованная структура, поиск = O(1)",
+            "// RTK предоставляет createEntityAdapter для этого",
+            "import { createEntityAdapter } from '@reduxjs/toolkit'",
+            "",
+            "const postsAdapter = createEntityAdapter<Post>()",
+            "// postsAdapter создаёт: { ids: [1, 2], entities: { 1: {...}, 2: {...} } }",
+            "",
+            "const postsSlice = createSlice({",
+            "  name: 'posts',",
+            "  initialState: postsAdapter.getInitialState(),",
+            "  reducers: {",
+            "    postAdded:   postsAdapter.addOne,",
+            "    postUpdated: postsAdapter.updateOne,",
+            "    postRemoved: postsAdapter.removeOne,",
+            "  },",
+            "})",
+            "",
+            "// Готовые селекторы",
+            "export const { selectAll, selectById, selectIds } =",
+            "  postsAdapter.getSelectors((state: RootState) => state.posts)"
+          ].join("\n"),
+          noteType: "info",
+          note: "createEntityAdapter — встроенный инструмент RTK для нормализации. Не нужно писать CRUD-операции вручную."
+        },
+        {
+          title: "Не хранить в Redux то что не нужно",
+          code: [
+            "// ❌ Плохо — локальное UI-состояние в Redux",
+            "// Открыт ли дропдаун, текущий шаг формы, значение инпута",
+            "// → нет смысла, усложняет код",
+            "",
+            "// Правило: что хранить в Redux?",
+            "// ✅ Данные от сервера (пользователь, посты, настройки)",
+            "// ✅ Глобальное UI-состояние (тема, язык, уведомления)",
+            "// ✅ Состояние авторизации (токен, профиль)",
+            "",
+            "// Что НЕ хранить в Redux:",
+            "// ❌ Значения инпутов формы → useState",
+            "// ❌ Открыт ли модал → useState",
+            "// ❌ Hover-состояние → useState или CSS",
+            "// ❌ Временные данные только одного компонента → useState",
+            "",
+            "// Если данные нужны в 2+ несвязанных компонентах → Redux/Context",
+            "// Если данные нужны только внутри компонента → useState"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "RTK Query — практики",
+      cards: [
+        {
+          title: "Один baseApi — расширять через injectEndpoints",
+          code: [
+            "// app/baseApi.ts — один общий baseQuery с авторизацией",
+            "export const baseApi = createApi({",
+            "  reducerPath: 'api',",
+            "  baseQuery: fetchBaseQuery({",
+            "    baseUrl: import.meta.env.VITE_API_URL,",
+            "    prepareHeaders: (headers, { getState }) => {",
+            "      const token = (getState() as RootState).auth.token",
+            "      if (token) headers.set('Authorization', 'Bearer ' + token)",
+            "      return headers",
+            "    },",
+            "  }),",
+            "  tagTypes: ['Post', 'User', 'Comment'],",
+            "  endpoints: () => ({}),",
+            "})",
+            "",
+            "// features/posts/postsApi.ts — расширяем базовый API",
+            "export const postsApi = baseApi.injectEndpoints({",
+            "  endpoints: (builder) => ({",
+            "    getPosts: builder.query<Post[], void>({",
+            "      query: () => '/posts',",
+            "      providesTags: ['Post'],",
+            "    }),",
+            "  }),",
+            "})",
+            "",
+            "// ✅ Один ключ в store, один middleware, общие теги"
+          ].join("\n"),
+          noteType: "success",
+          note: "injectEndpoints позволяет держать один API-сервис но разбивать эндпоинты по фичам. Это лучше чем несколько createApi."
+        },
+        {
+          title: "Обработка ошибок RTK Query",
+          code: [
+            "// Тип ошибки RTK Query",
+            "import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'",
+            "",
+            "function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {",
+            "  return typeof error === 'object' && error !== null && 'status' in error",
+            "}",
+            "",
+            "// В компоненте",
+            "const { data, isError, error } = useGetPostsQuery()",
+            "",
+            "if (isError) {",
+            "  if (isFetchBaseQueryError(error)) {",
+            "    // Ошибка от сервера",
+            "    if (error.status === 404) return <p>Не найдено</p>",
+            "    if (error.status === 401) return <p>Нет доступа</p>",
+            "    return <p>Ошибка сервера: {error.status}</p>",
+            "  }",
+            "  // Сетевая ошибка",
+            "  return <p>Нет соединения</p>",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "TypeScript — практики",
+      cards: [
+        {
+          title: "Никогда не используй any",
+          code: [
+            "// ❌ any — отключает проверку типов, теряется смысл TS",
+            "function process(data: any) {",
+            "  data.foo.bar.baz  // TS не скажет об ошибке — упадёт в рантайме",
+            "}",
+            "",
+            "// ✅ unknown — заставляет проверить тип перед использованием",
+            "function process(data: unknown) {",
+            "  if (typeof data === 'object' && data !== null && 'foo' in data) {",
+            "    // теперь можно работать с data.foo",
+            "  }",
+            "}",
+            "",
+            "// ✅ Типизация через дженерики вместо any",
+            "// Плохо:",
+            "function identity(arg: any): any { return arg }",
+            "",
+            "// Хорошо:",
+            "function identity<T>(arg: T): T { return arg }",
+            "",
+            "// ✅ Когда реально не знаешь тип — используй unknown, не any"
+          ].join("\n"),
+          noteType: "danger",
+          note: "any — это отключение TypeScript на данном участке. Если хочется написать any — это сигнал что нужно разобраться с типами."
+        },
+        {
+          title: "as const и readonly",
+          code: [
+            "// as const — делает значения литеральными (неизменяемыми)",
+            "// Без as const:",
+            "const STATUS = { IDLE: 'idle', LOADING: 'loading' }",
+            "// STATUS.IDLE: string  ← слишком широко",
+            "",
+            "// С as const:",
+            "const STATUS = { IDLE: 'idle', LOADING: 'loading' } as const",
+            "// STATUS.IDLE: 'idle'  ← точный литеральный тип",
+            "",
+            "// Отлично работает с типами:",
+            "type Status = typeof STATUS[keyof typeof STATUS]",
+            "// type Status = 'idle' | 'loading'",
+            "",
+            "// Массив как const",
+            "const ROLES = ['admin', 'user', 'guest'] as const",
+            "type Role = typeof ROLES[number]  // 'admin' | 'user' | 'guest'",
+            "",
+            "// readonly — запрет изменений в типе",
+            "interface Config {",
+            "  readonly apiUrl:  string",
+            "  readonly timeout: number",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Типизация через zod — валидация + типы",
+          code: [
+            "// npm install zod",
+            "import { z } from 'zod'",
+            "",
+            "// Схема описывает структуру И создаёт тип автоматически",
+            "const UserSchema = z.object({",
+            "  id:    z.number(),",
+            "  name:  z.string().min(2).max(50),",
+            "  email: z.string().email(),",
+            "  role:  z.enum(['admin', 'user', 'guest']),",
+            "  age:   z.number().min(0).max(120).optional(),",
+            "})",
+            "",
+            "// Тип выводится из схемы — не нужно писать вручную",
+            "type User = z.infer<typeof UserSchema>",
+            "",
+            "// Валидация данных от API (parse бросает ошибку если не совпадает)",
+            "const data = await fetch('/api/user').then(r => r.json())",
+            "const user = UserSchema.parse(data)        // строгая валидация",
+            "const user2 = UserSchema.safeParse(data)   // возвращает { success, data, error }",
+            "",
+            "if (user2.success) {",
+            "  console.log(user2.data.name)  // безопасно",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "Zod — стандарт для валидации данных в TypeScript-проектах. Особенно важен для данных от API — нельзя доверять что сервер вернёт правильный тип."
+        }
+      ]
+    },
+    {
+      label: "Производительность",
+      cards: [
+        {
+          title: "memo, useMemo, useCallback — когда использовать",
+          code: [
+            "import { memo, useMemo, useCallback } from 'react'",
+            "",
+            "// memo — не перерендеривать если props не изменились",
+            "// ✅ Используй для 'тяжёлых' компонентов или больших списков",
+            "const PostCard = memo(function PostCard({ post }: { post: Post }) {",
+            "  return <div>{post.title}</div>",
+            "})",
+            "",
+            "// useMemo — кешировать результат вычисления",
+            "// ✅ Только для дорогих вычислений",
+            "const sortedPosts = useMemo(",
+            "  () => [...posts].sort((a, b) => b.date - a.date),",
+            "  [posts]  // пересчитать только если posts изменился",
+            ")",
+            "",
+            "// useCallback — стабильная ссылка на функцию",
+            "// ✅ Нужен когда функция передаётся в memo-компонент",
+            "const handleDelete = useCallback(",
+            "  (id: number) => dispatch(deletePost(id)),",
+            "  [dispatch]",
+            ")",
+            "",
+            "// ❌ НЕ нужно использовать везде!",
+            "// memo/useMemo/useCallback стоят памяти и времени.",
+            "// Применяй только при реальной проблеме производительности."
+          ].join("\n"),
+          noteType: "danger",
+          note: "Преждевременная оптимизация — корень зла. Не оборачивай всё в memo/useMemo/useCallback по умолчанию. Сначала измерь проблему через React DevTools Profiler."
+        },
+        {
+          title: "Lazy loading — загрузка страниц по требованию",
+          code: [
+            "import { lazy, Suspense } from 'react'",
+            "",
+            "// Страницы загружаются только когда пользователь на них переходит",
+            "const HomePage    = lazy(() => import('./pages/HomePage'))",
+            "const PostPage    = lazy(() => import('./pages/PostPage'))",
+            "const ProfilePage = lazy(() => import('./pages/ProfilePage'))",
+            "",
+            "// Suspense — показывает fallback пока страница загружается",
+            "function App() {",
+            "  return (",
+            "    <Suspense fallback={<PageLoader />}>",
+            "      <Routes>",
+            "        <Route path='/'        element={<HomePage />} />",
+            "        <Route path='/posts/:id' element={<PostPage />} />",
+            "        <Route path='/profile' element={<ProfilePage />} />",
+            "      </Routes>",
+            "    </Suspense>",
+            "  )",
+            "}",
+            "",
+            "// ✅ Начальный bundle становится значительно меньше"
+          ].join("\n"),
+          noteType: "success",
+          note: "Lazy loading страниц — обязательная практика для production. Без неё весь код грузится при первом открытии сайта."
+        }
+      ]
+    }
+  ]
+}
+
+]; // end TABS
+
+// ─── рендер ─────────────────────────────────────────────────────────────────
+
+let activeId = "router";
+
+function render() {
+  const tabsEl    = document.getElementById("tabs");
+  const contentEl = document.getElementById("content");
+
+  tabsEl.innerHTML = TABS.map(t => `
+    <button class="tab ${t.id === activeId ? 'active' : ''}" data-id="${t.id}"
+      style="color:${t.id === activeId ? t.color : '#8b949e'};
+             border-bottom-color:${t.id === activeId ? t.color : 'transparent'}">
+      ${t.label}
+    </button>
+  `).join("");
+
+  tabsEl.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => { activeId = btn.dataset.id; render(); });
+  });
+
+  const tab = TABS.find(t => t.id === activeId);
+
+  contentEl.innerHTML = tab.groups.map(group => {
+    const cards = group.cards.map((card, i) => {
+      const noteHtml = card.note
+        ? `<div class="note ${card.noteType || ''}">${card.note}</div>`
+        : "";
+      return `
+        <div class="card">
+          <div class="card-header">
+            <span class="dot" style="background:${tab.color}"></span>
+            ${card.title}
+          </div>
+          <div class="code-wrap">
+            <pre id="code-${group.label}-${i}">${escHtml(card.code)}</pre>
+            <button class="copy-btn" data-group="${group.label}" data-idx="${i}">copy</button>
+            ${noteHtml}
+          </div>
+        </div>`;
+    }).join("");
+
+    return `<div class="section-label">${group.label}</div>${cards}`;
+  }).join("");
+
+  contentEl.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const gLabel = btn.dataset.group;
+      const idx    = parseInt(btn.dataset.idx);
+      const group  = tab.groups.find(g => g.label === gLabel);
+      copyText(group.cards[idx].code);
+      btn.textContent = "✓ ok";
+      btn.classList.add("ok");
+      setTimeout(() => { btn.textContent = "copy"; btn.classList.remove("ok"); }, 1500);
+    });
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function copyText(text) {
+  try { if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(()=>{}); return; } } catch(e) {}
+  try {
+    const el = document.createElement("textarea");
+    el.value = text; el.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(el); el.select();
+    document.execCommand("copy"); document.body.removeChild(el);
+  } catch(e) {}
+}
+
+render();
+</script>
+</body>
+</html>

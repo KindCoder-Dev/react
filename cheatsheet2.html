@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Cheat Sheet 2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #010409; color: #e6edf3; font-family: system-ui, sans-serif; min-height: 100vh; padding-bottom: 60px; }
+  header { background: #0d1117; border-bottom: 1px solid #21262d; padding: 20px 16px 0; position: sticky; top: 0; z-index: 10; }
+  h1 { font-size: 20px; font-weight: 700; color: #f0f6fc; }
+  .subtitle { color: #8b949e; font-size: 13px; margin: 4px 0 14px; }
+  .tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+  .tab { padding: 8px 13px; font-size: 12.5px; font-weight: 500; cursor: pointer; background: transparent; color: #8b949e; border: none; border-bottom: 2px solid transparent; border-radius: 6px 6px 0 0; transition: color .15s; white-space: nowrap; }
+  .tab.active { background: #161b22; }
+  .content { max-width: 800px; margin: 0 auto; padding: 20px 16px 0; }
+  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #8b949e; margin: 28px 0 10px; padding-left: 2px; }
+  .section-label:first-child { margin-top: 0; }
+  .card { background: #0d1117; border: 1px solid #21262d; border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+  .card-header { padding: 10px 14px; border-bottom: 1px solid #21262d; background: #161b22; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #f0f6fc; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .code-wrap { position: relative; padding: 0 12px 12px; }
+  pre { background: #010409; border: 1px solid #21262d; border-radius: 7px; padding: 12px 52px 12px 14px; font-size: 12px; line-height: 1.7; overflow-x: auto; color: #e6edf3; font-family: monospace; white-space: pre; margin-top: 8px; }
+  .note { background: #161b22; border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 8px 12px; font-size: 12px; color: #d1a855; margin: 8px 0 0; line-height: 1.5; }
+  .note.info    { border-color: #3b82f6; color: #93c5fd; }
+  .note.danger  { border-color: #ef4444; color: #fca5a5; }
+  .note.success { border-color: #22c55e; color: #86efac; }
+  .copy-btn { position: absolute; top: 18px; right: 18px; background: #ffffff11; border: 1px solid #30363d; border-radius: 5px; color: #8b949e; font-size: 11px; padding: 3px 8px; cursor: pointer; font-family: monospace; transition: all .15s; }
+  .copy-btn.ok { background: #22c55e22; border-color: #22c55e; color: #22c55e; }
+
+  /* ── navbar ── */
+  .navbar {
+    background: #0d1117cc; backdrop-filter: blur(12px);
+    border-bottom: 1px solid #21262d; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .navbar a { font-size: 12.5px; font-weight: 600; color: #8b949e; text-decoration: none; padding: 5px 10px; border-radius: 6px; transition: background .15s, color .15s; white-space: nowrap; }
+  .navbar a:hover { background: #161b22; color: #f0f6fc; }
+  .navbar a.home { color: #f0f6fc; background: #161b22; }
+  .navbar .sep { color: #30363d; font-size: 13px; }
+  .navbar .title { font-size: 13px; font-weight: 700; color: #f0f6fc; }
+  .navbar-right { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="home">← Главная</a>
+  <span class="sep">/</span>
+  <span class="title">Шпаргалка №2</span>
+  <div class="navbar-right">
+    <a href="guide.html">Путеводитель</a>
+    <a href="cheatsheet.html">Шпаргалка №1</a>
+    <a href="cheatsheet3.html">Шпаргалка №3</a>
+  </div>
+</nav>
+<header>
+  <h1>⚡ React Cheat Sheet 2</h1>
+  <p class="subtitle">Forms · Error Boundaries · Hooks · Patterns · Zustand · Portal · Tools</p>
+  <div class="tabs" id="tabs"></div>
+</header>
+<div class="content" id="content"></div>
+
+<script>
+const TABS = [
+
+// ════════════════════════════════════════════════════════════
+// 1. REACT-HOOK-FORM + ZOD
+// ════════════════════════════════════════════════════════════
+{
+  id: "forms", label: "RHF + Zod", color: "#f97316",
+  groups: [
+    {
+      label: "Установка и базовая форма",
+      cards: [
+        {
+          title: "Установка",
+          code: "npm install react-hook-form zod @hookform/resolvers"
+        },
+        {
+          title: "Зачем RHF вместо useState для форм?",
+          code: [
+            "// ❌ Плохо — useState на каждое поле",
+            "const [name,     setName]     = useState('')",
+            "const [email,    setEmail]    = useState('')",
+            "const [password, setPassword] = useState('')",
+            "const [errors,   setErrors]   = useState({})",
+            "// + вручную validate() + вручную touched + вручную isSubmitting...",
+            "",
+            "// ✅ RHF — одна строка, всё включено",
+            "const { register, handleSubmit, formState: { errors } } = useForm()",
+            "// Нет ре-рендеров при вводе — производительность намного лучше",
+            "// Встроенная валидация, touched, dirty, isSubmitting и т.д."
+          ].join("\n"),
+          noteType: "success",
+          note: "RHF не хранит значения в state — использует неконтролируемые инпуты (ref). Это даёт огромный прирост производительности на больших формах."
+        },
+        {
+          title: "Базовая форма с RHF",
+          code: [
+            "import { useForm, SubmitHandler } from 'react-hook-form'",
+            "",
+            "// Тип данных формы",
+            "interface LoginFormData {",
+            "  email:    string",
+            "  password: string",
+            "}",
+            "",
+            "function LoginForm() {",
+            "  const {",
+            "    register,           // подключить инпут к форме",
+            "    handleSubmit,       // обёртка для onSubmit",
+            "    formState: {",
+            "      errors,           // ошибки валидации",
+            "      isSubmitting,     // true пока выполняется onSubmit",
+            "      isDirty,          // true если хоть одно поле изменено",
+            "      isValid,          // true если нет ошибок",
+            "    },",
+            "  } = useForm<LoginFormData>()",
+            "",
+            "  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {",
+            "    // data уже валидны — RHF не вызовет onSubmit если есть ошибки",
+            "    await loginUser(data)",
+            "  }",
+            "",
+            "  return (",
+            "    <form onSubmit={handleSubmit(onSubmit)}>",
+            "      <input",
+            "        {...register('email', {",
+            "          required: 'Email обязателен',",
+            "          pattern: { value: /\\S+@\\S+\\.\\S+/, message: 'Неверный email' },",
+            "        })}",
+            "      />",
+            "      {errors.email && <p>{errors.email.message}</p>}",
+            "",
+            "      <input",
+            "        type='password'",
+            "        {...register('password', {",
+            "          required: 'Пароль обязателен',",
+            "          minLength: { value: 8, message: 'Минимум 8 символов' },",
+            "        })}",
+            "      />",
+            "      {errors.password && <p>{errors.password.message}</p>}",
+            "",
+            "      <button type='submit' disabled={isSubmitting}>",
+            "        {isSubmitting ? 'Входим...' : 'Войти'}",
+            "      </button>",
+            "    </form>",
+            "  )",
+            "}"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Zod — валидация схемой",
+      cards: [
+        {
+          title: "useForm + zodResolver — лучший паттерн",
+          code: [
+            "import { useForm } from 'react-hook-form'",
+            "import { zodResolver } from '@hookform/resolvers/zod'",
+            "import { z } from 'zod'",
+            "",
+            "// 1. Описываем схему валидации",
+            "const schema = z.object({",
+            "  name: z.string()",
+            "    .min(2, 'Минимум 2 символа')",
+            "    .max(50, 'Максимум 50 символов'),",
+            "",
+            "  email: z.string()",
+            "    .email('Неверный формат email'),",
+            "",
+            "  password: z.string()",
+            "    .min(8, 'Минимум 8 символов')",
+            "    .regex(/[A-Z]/, 'Должна быть заглавная буква')",
+            "    .regex(/[0-9]/, 'Должна быть цифра'),",
+            "",
+            "  age: z.number()",
+            "    .min(18, 'Минимальный возраст 18 лет')",
+            "    .max(120),",
+            "",
+            "  role: z.enum(['admin', 'user', 'guest']),",
+            "})",
+            "",
+            "// 2. Выводим тип из схемы — не нужно писать вручную",
+            "type FormData = z.infer<typeof schema>",
+            "",
+            "// 3. Подключаем resolver",
+            "function RegisterForm() {",
+            "  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({",
+            "    resolver: zodResolver(schema),",
+            "    defaultValues: { role: 'user' },",
+            "  })",
+            "",
+            "  const onSubmit = (data: FormData) => console.log(data)",
+            "",
+            "  return (",
+            "    <form onSubmit={handleSubmit(onSubmit)}>",
+            "      <input {...register('email')} />",
+            "      {errors.email && <p>{errors.email.message}</p>}",
+            "      <button type='submit'>Зарегистрироваться</button>",
+            "    </form>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "zodResolver — лучший способ валидации. Схема zod одновременно даёт типы TypeScript и правила валидации формы."
+        },
+        {
+          title: "Zod — кросс-полевая валидация (refine)",
+          code: [
+            "// Пример: password и confirmPassword должны совпадать",
+            "const schema = z.object({",
+            "  password:        z.string().min(8),",
+            "  confirmPassword: z.string(),",
+            "})",
+            ".refine(                                   // проверка всего объекта",
+            "  (data) => data.password === data.confirmPassword,",
+            "  {",
+            "    message: 'Пароли не совпадают',",
+            "    path: ['confirmPassword'],              // к какому полю прикрепить ошибку",
+            "  }",
+            ")",
+            "",
+            "// Несколько refine",
+            "const schema = z.object({",
+            "  startDate: z.string(),",
+            "  endDate:   z.string(),",
+            "})",
+            ".refine(",
+            "  (d) => new Date(d.endDate) > new Date(d.startDate),",
+            "  { message: 'Дата конца должна быть позже даты начала', path: ['endDate'] }",
+            ")"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Продвинутые возможности RHF",
+      cards: [
+        {
+          title: "watch — следить за значением поля",
+          code: [
+            "const { register, watch } = useForm<FormData>()",
+            "",
+            "// Следим за одним полем",
+            "const role = watch('role')",
+            "",
+            "// Следим за несколькими",
+            "const [email, name] = watch(['email', 'name'])",
+            "",
+            "// Следим за всей формой",
+            "const allValues = watch()",
+            "",
+            "// Пример: показываем доп. поле если выбрана роль 'admin'",
+            "return (",
+            "  <form>",
+            "    <select {...register('role')}>",
+            "      <option value='user'>Пользователь</option>",
+            "      <option value='admin'>Администратор</option>",
+            "    </select>",
+            "",
+            "    {role === 'admin' && (",
+            "      <input {...register('adminCode')} placeholder='Код администратора' />",
+            "    )}",
+            "  </form>",
+            ")"
+          ].join("\n")
+        },
+        {
+          title: "setValue и reset — изменить значения программно",
+          code: [
+            "const { register, setValue, reset, getValues } = useForm<FormData>()",
+            "",
+            "// Установить значение одного поля",
+            "setValue('email', 'user@example.com')",
+            "",
+            "// Установить с валидацией и маркировкой 'изменено'",
+            "setValue('email', 'user@example.com', {",
+            "  shouldValidate: true,",
+            "  shouldDirty:    true,",
+            "})",
+            "",
+            "// Сбросить к дефолтным значениям",
+            "reset()",
+            "",
+            "// Сбросить с новыми значениями (например после загрузки данных с сервера)",
+            "useEffect(() => {",
+            "  if (userData) {",
+            "    reset({",
+            "      name:  userData.name,",
+            "      email: userData.email,",
+            "    })",
+            "  }",
+            "}, [userData, reset])",
+            "",
+            "// Получить текущие значения без подписки",
+            "const currentValues = getValues()"
+          ].join("\n")
+        },
+        {
+          title: "useFieldArray — динамические поля",
+          code: [
+            "import { useForm, useFieldArray } from 'react-hook-form'",
+            "",
+            "interface FormData {",
+            "  items: { name: string; quantity: number }[]",
+            "}",
+            "",
+            "function OrderForm() {",
+            "  const { register, control, handleSubmit } = useForm<FormData>({",
+            "    defaultValues: { items: [{ name: '', quantity: 1 }] },",
+            "  })",
+            "",
+            "  const { fields, append, remove, move } = useFieldArray({",
+            "    control,",
+            "    name: 'items',",
+            "  })",
+            "",
+            "  return (",
+            "    <form>",
+            "      {fields.map((field, index) => (",
+            "        <div key={field.id}>    // field.id — стабильный ключ от RHF",
+            "          <input {...register('items.' + index + '.name')} />",
+            "          <input {...register('items.' + index + '.quantity')} type='number' />",
+            "          <button type='button' onClick={() => remove(index)}>Удалить</button>",
+            "        </div>",
+            "      ))}",
+            "      <button type='button' onClick={() => append({ name: '', quantity: 1 })}>",
+            "        + Добавить",
+            "      </button>",
+            "    </form>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "useFieldArray — стандартный способ для списков в форме: строки в таблице, список телефонов, теги и т.д."
+        },
+        {
+          title: "Controller — для кастомных/UI-компонентов",
+          code: [
+            "import { useForm, Controller } from 'react-hook-form'",
+            "",
+            "// Когда компонент не работает с нативным ref (select-библиотеки, DatePicker и т.д.)",
+            "// Используй Controller вместо register",
+            "",
+            "function AdvancedForm() {",
+            "  const { control, handleSubmit } = useForm<FormData>()",
+            "",
+            "  return (",
+            "    <form onSubmit={handleSubmit(onSubmit)}>",
+            "      <Controller",
+            "        name='category'",
+            "        control={control}",
+            "        rules={{ required: 'Выберите категорию' }}",
+            "        render={({ field, fieldState }) => (",
+            "          <div>",
+            "            // field содержит: value, onChange, onBlur, ref",
+            "            <CustomSelect",
+            "              value={field.value}",
+            "              onChange={field.onChange}",
+            "              onBlur={field.onBlur}",
+            "            />",
+            "            {fieldState.error && <p>{fieldState.error.message}</p>}",
+            "          </div>",
+            "        )}",
+            "      />",
+            "    </form>",
+            "  )",
+            "}"
+          ].join("\n")
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 2. ERROR BOUNDARIES
+// ════════════════════════════════════════════════════════════
+{
+  id: "errors", label: "Error Boundaries", color: "#ef4444",
+  groups: [
+    {
+      label: "Основы",
+      cards: [
+        {
+          title: "Что такое Error Boundary и зачем",
+          code: [
+            "// Без Error Boundary — одна ошибка в компоненте",
+            "// ронит ВСЁ приложение (белый экран)",
+            "",
+            "// С Error Boundary — ошибка изолирована в своей зоне",
+            "// Остальное приложение продолжает работать",
+            "",
+            "// Error Boundary ЛОВИТ:",
+            "// ✅ Ошибки в render()",
+            "// ✅ Ошибки в lifecycle-методах",
+            "// ✅ Ошибки в дочерних компонентах",
+            "",
+            "// Error Boundary НЕ ЛОВИТ:",
+            "// ❌ Ошибки в event handlers (onClick, onChange) — try/catch",
+            "// ❌ Асинхронные ошибки (setTimeout, fetch) — try/catch",
+            "// ❌ Ошибки в самом Error Boundary",
+            "// ❌ Ошибки при Server-Side Rendering"
+          ].join("\n"),
+          noteType: "danger",
+          note: "Error Boundary — это классовый компонент. Хуков для этого нет (пока). Но можно использовать библиотеку react-error-boundary."
+        },
+        {
+          title: "Написать свой Error Boundary (класс)",
+          code: [
+            "import React, { Component, ReactNode } from 'react'",
+            "",
+            "interface Props {",
+            "  children:  ReactNode",
+            "  fallback?: ReactNode  // что показать при ошибке",
+            "}",
+            "",
+            "interface State {",
+            "  hasError: boolean",
+            "  error:    Error | null",
+            "}",
+            "",
+            "class ErrorBoundary extends Component<Props, State> {",
+            "  state: State = { hasError: false, error: null }",
+            "",
+            "  // Вызывается при ошибке — обновляет state для рендера fallback",
+            "  static getDerivedStateFromError(error: Error): State {",
+            "    return { hasError: true, error }",
+            "  }",
+            "",
+            "  // Вызывается после — можно отправить ошибку в Sentry и т.д.",
+            "  componentDidCatch(error: Error, info: React.ErrorInfo) {",
+            "    console.error('Поймана ошибка:', error, info.componentStack)",
+            "    // Sentry.captureException(error)",
+            "  }",
+            "",
+            "  render() {",
+            "    if (this.state.hasError) {",
+            "      return this.props.fallback ?? (",
+            "        <div>",
+            "          <h2>Что-то пошло не так</h2>",
+            "          <p>{this.state.error?.message}</p>",
+            "          <button onClick={() => this.setState({ hasError: false, error: null })}> ",
+            "            Попробовать снова",
+            "          </button>",
+            "        </div>",
+            "      )",
+            "    }",
+            "    return this.props.children",
+            "  }",
+            "}",
+            "",
+            "export default ErrorBoundary"
+          ].join("\n")
+        },
+        {
+          title: "react-error-boundary — библиотека (рекомендуется)",
+          code: [
+            "// npm install react-error-boundary",
+            "import { ErrorBoundary, useErrorBoundary } from 'react-error-boundary'",
+            "",
+            "// Компонент для отображения ошибки",
+            "function ErrorFallback({ error, resetErrorBoundary }: {",
+            "  error: Error",
+            "  resetErrorBoundary: () => void",
+            "}) {",
+            "  return (",
+            "    <div role='alert'>",
+            "      <p>Что-то пошло не так:</p>",
+            "      <pre>{error.message}</pre>",
+            "      <button onClick={resetErrorBoundary}>Попробовать снова</button>",
+            "    </div>",
+            "  )",
+            "}",
+            "",
+            "// Использование",
+            "function App() {",
+            "  return (",
+            "    <ErrorBoundary",
+            "      FallbackComponent={ErrorFallback}",
+            "      onError={(error, info) => console.error(error, info)}",
+            "      onReset={() => {/* очистить state или перезагрузить данные */}}",
+            "    >",
+            "      <Dashboard />",
+            "    </ErrorBoundary>",
+            "  )",
+            "}",
+            "",
+            "// Бросить ошибку из хука (для поимки ErrorBoundary)",
+            "function SomeComponent() {",
+            "  const { showBoundary } = useErrorBoundary()",
+            "",
+            "  const handleClick = async () => {",
+            "    try {",
+            "      await riskyOperation()",
+            "    } catch (error) {",
+            "      showBoundary(error)  // ← пробросить в ErrorBoundary",
+            "    }",
+            "  }",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "react-error-boundary — официально рекомендованная библиотека. Добавляет хуки и избавляет от написания классовых компонентов вручную."
+        }
+      ]
+    },
+    {
+      label: "Стратегия расстановки",
+      cards: [
+        {
+          title: "Где расставлять ErrorBoundary",
+          code: [
+            "// Стратегия 1 — один глобальный (минимум)",
+            "// Ловит всё но показывает пустой экран",
+            "ReactDOM.createRoot(root).render(",
+            "  <ErrorBoundary FallbackComponent={GlobalError}>",
+            "    <App />",
+            "  </ErrorBoundary>",
+            ")",
+            "",
+            "// Стратегия 2 — по страницам (хорошо)",
+            "// Ошибка на одной странице не ломает навигацию",
+            "<Routes>",
+            "  <Route path='/' element={",
+            "    <ErrorBoundary FallbackComponent={PageError}>",
+            "      <HomePage />",
+            "    </ErrorBoundary>",
+            "  } />",
+            "</Routes>",
+            "",
+            "// Стратегия 3 — по виджетам (лучше всего)",
+            "// Виджет упал — остальное работает",
+            "function Dashboard() {",
+            "  return (",
+            "    <div>",
+            "      <ErrorBoundary FallbackComponent={WidgetError}>",
+            "        <SalesChart />",
+            "      </ErrorBoundary>",
+            "      <ErrorBoundary FallbackComponent={WidgetError}>",
+            "        <UserStats />",
+            "      </ErrorBoundary>",
+            "      <ErrorBoundary FallbackComponent={WidgetError}>",
+            "        <RecentActivity />",
+            "      </ErrorBoundary>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "Лучшая стратегия: глобальный + по страницам + по критичным виджетам. Чем мельче граница — тем меньше пользователь теряет при ошибке."
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 3. CUSTOM HOOKS
+// ════════════════════════════════════════════════════════════
+{
+  id: "hooks", label: "Custom Hooks", color: "#22c55e",
+  groups: [
+    {
+      label: "Правила и принципы",
+      cards: [
+        {
+          title: "Когда выносить логику в кастомный хук",
+          code: [
+            "// Правила кастомных хуков:",
+            "// 1. Имя начинается с 'use' — обязательно",
+            "// 2. Может вызывать другие хуки",
+            "// 3. Хук = функция которая изолирует ЛОГИКУ, а не UI",
+            "",
+            "// Выноси в хук когда:",
+            "// ✅ Одна и та же логика повторяется в 2+ компонентах",
+            "// ✅ Компонент стал слишком большим — логику в хук, JSX остаётся",
+            "// ✅ Логику нужно протестировать отдельно от компонента",
+            "",
+            "// НЕ выноси в хук:",
+            "// ❌ JSX/разметку — это компонент, а не хук",
+            "// ❌ Простую логику без хуков — обычная функция"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Полезные хуки — реальные паттерны",
+      cards: [
+        {
+          title: "useLocalStorage — синхронизация с localStorage",
+          code: [
+            "function useLocalStorage<T>(key: string, initialValue: T) {",
+            "  const [value, setValue] = useState<T>(() => {",
+            "    // Инициализируем из localStorage (функция — ленивая инициализация)",
+            "    try {",
+            "      const item = localStorage.getItem(key)",
+            "      return item ? JSON.parse(item) : initialValue",
+            "    } catch {",
+            "      return initialValue",
+            "    }",
+            "  })",
+            "",
+            "  const set = (newValue: T | ((prev: T) => T)) => {",
+            "    try {",
+            "      const val = newValue instanceof Function ? newValue(value) : newValue",
+            "      setValue(val)",
+            "      localStorage.setItem(key, JSON.stringify(val))",
+            "    } catch (e) {",
+            "      console.error(e)",
+            "    }",
+            "  }",
+            "",
+            "  const remove = () => {",
+            "    setValue(initialValue)",
+            "    localStorage.removeItem(key)",
+            "  }",
+            "",
+            "  return [value, set, remove] as const",
+            "}",
+            "",
+            "// Использование",
+            "const [theme, setTheme, clearTheme] = useLocalStorage('theme', 'light')"
+          ].join("\n")
+        },
+        {
+          title: "useDebounce — задержка обновления значения",
+          code: [
+            "function useDebounce<T>(value: T, delay: number = 500): T {",
+            "  const [debouncedValue, setDebouncedValue] = useState<T>(value)",
+            "",
+            "  useEffect(() => {",
+            "    const timer = setTimeout(() => {",
+            "      setDebouncedValue(value)",
+            "    }, delay)",
+            "",
+            "    return () => clearTimeout(timer)  // сбрасываем при каждом изменении",
+            "  }, [value, delay])",
+            "",
+            "  return debouncedValue",
+            "}",
+            "",
+            "// Использование — поиск отправляется не при каждом нажатии",
+            "function Search() {",
+            "  const [query, setQuery] = useState('')",
+            "  const debouncedQuery   = useDebounce(query, 400)",
+            "",
+            "  // Запрос идёт только когда пользователь остановил ввод на 400мс",
+            "  const { data } = useSearchQuery(debouncedQuery, {",
+            "    skip: debouncedQuery.length < 2,",
+            "  })",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "useDebounce — один из самых используемых хуков в реальных проектах. Спасает от лишних запросов при поиске."
+        },
+        {
+          title: "useClickOutside — клик вне элемента",
+          code: [
+            "function useClickOutside<T extends HTMLElement>(callback: () => void) {",
+            "  const ref = useRef<T>(null)",
+            "",
+            "  useEffect(() => {",
+            "    const handler = (e: MouseEvent) => {",
+            "      // Если клик был не внутри элемента — вызываем callback",
+            "      if (ref.current && !ref.current.contains(e.target as Node)) {",
+            "        callback()",
+            "      }",
+            "    }",
+            "",
+            "    document.addEventListener('mousedown', handler)",
+            "    return () => document.removeEventListener('mousedown', handler)",
+            "  }, [callback])",
+            "",
+            "  return ref",
+            "}",
+            "",
+            "// Использование — закрыть дропдаун при клике вне",
+            "function Dropdown() {",
+            "  const [open, setOpen] = useState(false)",
+            "  const ref = useClickOutside<HTMLDivElement>(() => setOpen(false))",
+            "",
+            "  return (",
+            "    <div ref={ref}>",
+            "      <button onClick={() => setOpen(o => !o)}>Открыть</button>",
+            "      {open && <ul><li>Пункт 1</li><li>Пункт 2</li></ul>}",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "usePrevious — предыдущее значение",
+          code: [
+            "function usePrevious<T>(value: T): T | undefined {",
+            "  const ref = useRef<T>()              // useRef — не триггерит ре-рендер",
+            "",
+            "  useEffect(() => {",
+            "    ref.current = value                // обновляется ПОСЛЕ рендера",
+            "  })",
+            "",
+            "  return ref.current                  // возвращает значение ДО рендера",
+            "}",
+            "",
+            "// Использование",
+            "function Counter() {",
+            "  const [count, setCount] = useState(0)",
+            "  const prevCount = usePrevious(count)",
+            "",
+            "  return (",
+            "    <p>Было: {prevCount} → Стало: {count}</p>",
+            "  )",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "useMediaQuery — адаптивность в JS",
+          code: [
+            "function useMediaQuery(query: string): boolean {",
+            "  const [matches, setMatches] = useState(",
+            "    () => window.matchMedia(query).matches",
+            "  )",
+            "",
+            "  useEffect(() => {",
+            "    const mql      = window.matchMedia(query)",
+            "    const onChange = (e: MediaQueryListEvent) => setMatches(e.matches)",
+            "",
+            "    mql.addEventListener('change', onChange)",
+            "    return () => mql.removeEventListener('change', onChange)",
+            "  }, [query])",
+            "",
+            "  return matches",
+            "}",
+            "",
+            "// Использование",
+            "function Layout() {",
+            "  const isMobile  = useMediaQuery('(max-width: 768px)')",
+            "  const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)')",
+            "",
+            "  return isMobile ? <MobileNav /> : <DesktopNav />",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "useAsync — универсальный хук для асинхронных операций",
+          code: [
+            "interface AsyncState<T> {",
+            "  data:      T | null",
+            "  isLoading: boolean",
+            "  error:     Error | null",
+            "}",
+            "",
+            "function useAsync<T>(asyncFn: () => Promise<T>, deps: any[] = []) {",
+            "  const [state, setState] = useState<AsyncState<T>>({",
+            "    data: null, isLoading: true, error: null",
+            "  })",
+            "",
+            "  useEffect(() => {",
+            "    let cancelled = false           // флаг отмены",
+            "",
+            "    setState({ data: null, isLoading: true, error: null })",
+            "",
+            "    asyncFn()",
+            "      .then(data => {",
+            "        if (!cancelled) setState({ data, isLoading: false, error: null })",
+            "      })",
+            "      .catch(error => {",
+            "        if (!cancelled) setState({ data: null, isLoading: false, error })",
+            "      })",
+            "",
+            "    return () => { cancelled = true }  // cleanup при размонтировании",
+            "  }, deps)",
+            "",
+            "  return state",
+            "}",
+            "",
+            "// Использование",
+            "const { data, isLoading, error } = useAsync(",
+            "  () => fetch('/api/posts').then(r => r.json()),",
+            "  []",
+            ")"
+          ].join("\n")
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 4. ADVANCED PATTERNS
+// ════════════════════════════════════════════════════════════
+{
+  id: "patterns", label: "Паттерны", color: "#8b5cf6",
+  groups: [
+    {
+      label: "forwardRef и useImperativeHandle",
+      cards: [
+        {
+          title: "forwardRef — пробросить ref в дочерний компонент",
+          code: [
+            "import { forwardRef } from 'react'",
+            "",
+            "// Проблема: ref на кастомный компонент не работает по умолчанию",
+            "// <MyInput ref={inputRef} />  ← ref будет null без forwardRef",
+            "",
+            "interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {",
+            "  label?: string",
+            "}",
+            "",
+            "// forwardRef принимает props и ref",
+            "const MyInput = forwardRef<HTMLInputElement, InputProps>(",
+            "  function MyInput({ label, ...props }, ref) {",
+            "    return (",
+            "      <div>",
+            "        {label && <label>{label}</label>}",
+            "        <input ref={ref} {...props} />",
+            "      </div>",
+            "    )",
+            "  }",
+            ")",
+            "",
+            "// Использование — теперь ref указывает на нативный <input>",
+            "function Form() {",
+            "  const inputRef = useRef<HTMLInputElement>(null)",
+            "",
+            "  return (",
+            "    <div>",
+            "      <MyInput ref={inputRef} label='Email' type='email' />",
+            "      <button onClick={() => inputRef.current?.focus()}>Фокус</button>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "forwardRef обязателен если пишешь UI-компоненты (кнопки, инпуты, модалки) которые используют другие разработчики. Без него ref работать не будет."
+        },
+        {
+          title: "useImperativeHandle — контролировать что видит родитель через ref",
+          code: [
+            "import { forwardRef, useImperativeHandle, useRef } from 'react'",
+            "",
+            "// Вместо того чтобы давать доступ ко всему DOM-элементу,",
+            "// открываем только конкретные методы",
+            "",
+            "interface ModalHandle {",
+            "  open:  () => void",
+            "  close: () => void",
+            "}",
+            "",
+            "const Modal = forwardRef<ModalHandle, { title: string }>((",
+            "  { title }, ref",
+            ") => {",
+            "  const [isOpen, setIsOpen] = useState(false)",
+            "",
+            "  // Открываем наружу только open и close",
+            "  useImperativeHandle(ref, () => ({",
+            "    open:  () => setIsOpen(true),",
+            "    close: () => setIsOpen(false),",
+            "  }))",
+            "",
+            "  return isOpen ? (",
+            "    <div className='modal'>",
+            "      <h2>{title}</h2>",
+            "      <button onClick={() => setIsOpen(false)}>✕</button>",
+            "    </div>",
+            "  ) : null",
+            "})",
+            "",
+            "// Использование",
+            "function Page() {",
+            "  const modalRef = useRef<ModalHandle>(null)",
+            "",
+            "  return (",
+            "    <div>",
+            "      <button onClick={() => modalRef.current?.open()}>Открыть</button>",
+            "      <Modal ref={modalRef} title='Подтверждение' />",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "useImperativeHandle — для управления компонентом 'снаружи'. Популярен для: модалок, слайдеров, видеоплееров, форм с внешним submit."
+        }
+      ]
+    },
+    {
+      label: "Compound Components",
+      cards: [
+        {
+          title: "Compound Components — связанные компоненты",
+          code: [
+            "// Паттерн: компоненты которые делятся состоянием через Context",
+            "// Используется в: Tabs, Accordion, Select, Dropdown",
+            "",
+            "interface TabsContextType {",
+            "  activeTab: string",
+            "  setActive: (id: string) => void",
+            "}",
+            "",
+            "const TabsContext = createContext<TabsContextType | undefined>(undefined)",
+            "",
+            "function useTabs() {",
+            "  const ctx = useContext(TabsContext)",
+            "  if (!ctx) throw new Error('Используй внутри <Tabs>')",
+            "  return ctx",
+            "}",
+            "",
+            "// Корневой компонент",
+            "function Tabs({ children, defaultTab }: { children: ReactNode; defaultTab: string }) {",
+            "  const [activeTab, setActive] = useState(defaultTab)",
+            "  return (",
+            "    <TabsContext.Provider value={{ activeTab, setActive }}>",
+            "      <div>{children}</div>",
+            "    </TabsContext.Provider>",
+            "  )",
+            "}",
+            "",
+            "// Дочерние компоненты",
+            "Tabs.Tab = function Tab({ id, children }: { id: string; children: ReactNode }) {",
+            "  const { activeTab, setActive } = useTabs()",
+            "  return (",
+            "    <button",
+            "      onClick={() => setActive(id)}",
+            "      style={{ fontWeight: activeTab === id ? 700 : 400 }}",
+            "    >",
+            "      {children}",
+            "    </button>",
+            "  )",
+            "}",
+            "",
+            "Tabs.Panel = function Panel({ id, children }: { id: string; children: ReactNode }) {",
+            "  const { activeTab } = useTabs()",
+            "  return activeTab === id ? <div>{children}</div> : null",
+            "}",
+            "",
+            "// Использование — читается как HTML",
+            "<Tabs defaultTab='posts'>",
+            "  <Tabs.Tab id='posts'>Посты</Tabs.Tab>",
+            "  <Tabs.Tab id='comments'>Комментарии</Tabs.Tab>",
+            "  <Tabs.Panel id='posts'><PostsList /></Tabs.Panel>",
+            "  <Tabs.Panel id='comments'><CommentsList /></Tabs.Panel>",
+            "</Tabs>"
+          ].join("\n"),
+          noteType: "success",
+          note: "Compound Components — паттерн большинства UI-библиотек (Radix, shadcn/ui, HeadlessUI). Понимать его важно чтобы правильно использовать и создавать такие компоненты."
+        }
+      ]
+    },
+    {
+      label: "Render Props",
+      cards: [
+        {
+          title: "Render Props — передать функцию рендера как prop",
+          code: [
+            "// Паттерн: компонент управляет состоянием,",
+            "// а КАК рендерить — решает тот кто его использует",
+            "",
+            "interface MouseTrackerProps {",
+            "  render: (pos: { x: number; y: number }) => ReactNode",
+            "}",
+            "",
+            "function MouseTracker({ render }: MouseTrackerProps) {",
+            "  const [pos, setPos] = useState({ x: 0, y: 0 })",
+            "",
+            "  return (",
+            "    <div onMouseMove={e => setPos({ x: e.clientX, y: e.clientY })}>",
+            "      {render(pos)}",
+            "    </div>",
+            "  )",
+            "}",
+            "",
+            "// Использование — один компонент, разный рендер",
+            "<MouseTracker render={({ x, y }) => (",
+            "  <p>Курсор: {x}, {y}</p>",
+            ")} />",
+            "",
+            "<MouseTracker render={({ x, y }) => (",
+            "  <div style={{ transform: 'translate(' + x + 'px,' + y + 'px)' }}>🎯</div>",
+            ")} />",
+            "",
+            "// В современном React чаще используют кастомный хук",
+            "// Render Props — старший паттерн, но встречается в библиотеках"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "createPortal — рендер вне родителя",
+      cards: [
+        {
+          title: "createPortal — модалки, тултипы, дропдауны",
+          code: [
+            "import { createPortal } from 'react-dom'",
+            "",
+            "// Проблема: модалка внутри элемента с overflow:hidden или z-index",
+            "// будет обрезаться. createPortal рендерит DOM в другом месте,",
+            "// но компонент остаётся частью React-дерева (события работают)",
+            "",
+            "function Modal({ isOpen, onClose, children }: {",
+            "  isOpen:   boolean",
+            "  onClose:  () => void",
+            "  children: ReactNode",
+            "}) {",
+            "  if (!isOpen) return null",
+            "",
+            "  // Рендерим в document.body — вне любого overflow:hidden",
+            "  return createPortal(",
+            "    <div className='modal-overlay' onClick={onClose}>",
+            "      <div className='modal-content' onClick={e => e.stopPropagation()}>",
+            "        <button onClick={onClose}>✕</button>",
+            "        {children}",
+            "      </div>",
+            "    </div>,",
+            "    document.body    // ← второй аргумент: DOM-элемент куда монтировать",
+            "  )",
+            "}",
+            "",
+            "// Использование — как обычный компонент",
+            "function App() {",
+            "  const [open, setOpen] = useState(false)",
+            "  return (",
+            "    <div style={{ overflow: 'hidden' }}>",
+            "      <button onClick={() => setOpen(true)}>Открыть</button>",
+            "      <Modal isOpen={open} onClose={() => setOpen(false)}>",
+            "        <h2>Заголовок модалки</h2>",
+            "      </Modal>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "info",
+          note: "createPortal: React-события работают как обычно (всплытие идёт по React-дереву, не по DOM). Но DOM-нода физически находится в document.body."
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 5. ZUSTAND
+// ════════════════════════════════════════════════════════════
+{
+  id: "zustand", label: "Zustand", color: "#06b6d4",
+  groups: [
+    {
+      label: "Основы",
+      cards: [
+        {
+          title: "Zustand vs Redux — когда что выбрать",
+          code: [
+            "// Redux Toolkit",
+            "// ✅ Большие команды — строгая структура",
+            "// ✅ Нужны DevTools с time-travel debugging",
+            "// ✅ Сложные зависимости между slice-ами",
+            "// ✅ RTK Query для API",
+            "// ❌ Много бойлерплейта",
+            "",
+            "// Zustand",
+            "// ✅ Быстрый старт — минимум кода",
+            "// ✅ Небольшие/средние проекты",
+            "// ✅ Команда не знает Redux",
+            "// ✅ Нужно простое глобальное состояние",
+            "// ❌ Нет встроенного инструмента для API (нужен React Query отдельно)"
+          ].join("\n")
+        },
+        {
+          title: "Установка и базовый store",
+          code: [
+            "// npm install zustand",
+            "import { create } from 'zustand'",
+            "",
+            "// Тип store",
+            "interface CounterStore {",
+            "  count:       number",
+            "  increment:   () => void",
+            "  decrement:   () => void",
+            "  incrementBy: (n: number) => void",
+            "  reset:       () => void",
+            "}",
+            "",
+            "// Создаём store — одна функция, всё внутри",
+            "export const useCounterStore = create<CounterStore>((set) => ({",
+            "  count: 0,",
+            "",
+            "  increment:   () => set((state) => ({ count: state.count + 1 })),",
+            "  decrement:   () => set((state) => ({ count: state.count - 1 })),",
+            "  incrementBy: (n) => set((state) => ({ count: state.count + n })),",
+            "  reset:       () => set({ count: 0 }),",
+            "})",
+            "",
+            "// Использование в компоненте — никакого Provider!",
+            "function Counter() {",
+            "  const count     = useCounterStore((s) => s.count)",
+            "  const increment = useCounterStore((s) => s.increment)",
+            "",
+            "  return (",
+            "    <div>",
+            "      <p>{count}</p>",
+            "      <button onClick={increment}>+1</button>",
+            "    </div>",
+            "  )",
+            "}"
+          ].join("\n"),
+          noteType: "success",
+          note: "Zustand не требует Provider — store глобальный по умолчанию. Всегда подписывайся только на нужные поля через селектор: useStore(s => s.count) — это предотвращает лишние ре-рендеры."
+        },
+        {
+          title: "Async actions в Zustand",
+          code: [
+            "import { create } from 'zustand'",
+            "",
+            "interface PostsStore {",
+            "  posts:     Post[]",
+            "  isLoading: boolean",
+            "  error:     string | null",
+            "  fetchPosts:  () => Promise<void>",
+            "  createPost:  (data: Partial<Post>) => Promise<void>",
+            "}",
+            "",
+            "export const usePostsStore = create<PostsStore>((set) => ({",
+            "  posts:     [],",
+            "  isLoading: false,",
+            "  error:     null,",
+            "",
+            "  fetchPosts: async () => {",
+            "    set({ isLoading: true, error: null })",
+            "    try {",
+            "      const res   = await fetch('/api/posts')",
+            "      const posts = await res.json()",
+            "      set({ posts, isLoading: false })",
+            "    } catch (e) {",
+            "      set({ error: 'Ошибка загрузки', isLoading: false })",
+            "    }",
+            "  },",
+            "",
+            "  createPost: async (data) => {",
+            "    const res  = await fetch('/api/posts', { method: 'POST', body: JSON.stringify(data) })",
+            "    const post = await res.json()",
+            "    // Добавляем новый пост в список",
+            "    set((state) => ({ posts: [...state.posts, post] }))",
+            "  },",
+            "}))"
+          ].join("\n")
+        },
+        {
+          title: "persist — сохранять store в localStorage",
+          code: [
+            "import { create } from 'zustand'",
+            "import { persist, createJSONStorage } from 'zustand/middleware'",
+            "",
+            "interface AuthStore {",
+            "  token: string | null",
+            "  user:  User | null",
+            "  setToken: (token: string) => void",
+            "  logout:   () => void",
+            "}",
+            "",
+            "export const useAuthStore = create<AuthStore>()(persist(",
+            "  (set) => ({",
+            "    token: null,",
+            "    user:  null,",
+            "",
+            "    setToken: (token) => set({ token }),",
+            "    logout:   ()      => set({ token: null, user: null }),",
+            "  }),",
+            "  {",
+            "    name:    'auth-store',         // ключ в localStorage",
+            "    storage: createJSONStorage(() => localStorage),",
+            "    // Сохранять только token, не user",
+            "    partialize: (state) => ({ token: state.token }),",
+            "  }",
+            "))",
+            "",
+            "// После перезагрузки страницы token восстановится из localStorage"
+          ].join("\n"),
+          noteType: "info",
+          note: "persist — middleware для Zustand. Аналог Redux Persist. partialize позволяет выбрать какие именно поля сохранять."
+        },
+        {
+          title: "immer middleware — мутировать state напрямую",
+          code: [
+            "import { create } from 'zustand'",
+            "import { immer } from 'zustand/middleware/immer'",
+            "",
+            "interface TodoStore {",
+            "  todos:      Todo[]",
+            "  toggleTodo: (id: number) => void",
+            "  updateText: (id: number, text: string) => void",
+            "}",
+            "",
+            "export const useTodoStore = create<TodoStore>()(immer((set) => ({",
+            "  todos: [],",
+            "",
+            "  toggleTodo: (id) => set((state) => {",
+            "    // Можно мутировать state напрямую как в RTK",
+            "    const todo = state.todos.find(t => t.id === id)",
+            "    if (todo) todo.done = !todo.done",
+            "  }),",
+            "",
+            "  updateText: (id, text) => set((state) => {",
+            "    const todo = state.todos.find(t => t.id === id)",
+            "    if (todo) todo.text = text",
+            "  }),",
+            "}))"
+          ].join("\n")
+        }
+      ]
+    }
+  ]
+},
+
+// ════════════════════════════════════════════════════════════
+// 6. ИНСТРУМЕНТЫ
+// ════════════════════════════════════════════════════════════
+{
+  id: "tools", label: "Инструменты", color: "#f59e0b",
+  groups: [
+    {
+      label: "ESLint + Prettier",
+      cards: [
+        {
+          title: "Установка ESLint + Prettier для React+TS",
+          code: [
+            "// При создании через Vite ESLint уже настроен базово",
+            "// Добавляем Prettier",
+            "npm install -D prettier eslint-config-prettier eslint-plugin-prettier",
+            "",
+            "// .prettierrc — правила форматирования",
+            "{",
+            "  \"semi\":          false,",
+            "  \"singleQuote\":   true,",
+            "  \"tabWidth\":      2,",
+            "  \"trailingComma\": \"es5\",",
+            "  \"printWidth\":    100,",
+            "  \"bracketSpacing\": true",
+            "}",
+            "",
+            "// .prettierignore",
+            "node_modules",
+            "dist",
+            "build",
+            "",
+            "// package.json — скрипты",
+            "{",
+            "  \"scripts\": {",
+            "    \"lint\":       \"eslint . --ext .ts,.tsx\",",
+            "    \"lint:fix\":   \"eslint . --ext .ts,.tsx --fix\",",
+            "    \"format\":     \"prettier --write \\\"src/**/*.{ts,tsx,css}\\\"\",",
+            "    \"format:check\": \"prettier --check \\\"src/**/*.{ts,tsx,css}\\\"\"",
+            "  }",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "eslint.config.js — конфиг (плоский формат)",
+          code: [
+            "// eslint.config.js (новый flat config — ESLint 9+)",
+            "import js               from '@eslint/js'",
+            "import globals          from 'globals'",
+            "import reactHooks       from 'eslint-plugin-react-hooks'",
+            "import reactRefresh     from 'eslint-plugin-react-refresh'",
+            "import tseslint         from 'typescript-eslint'",
+            "",
+            "export default tseslint.config(",
+            "  { ignores: ['dist'] },",
+            "  {",
+            "    extends: [js.configs.recommended, ...tseslint.configs.recommended],",
+            "    files: ['**/*.{ts,tsx}'],",
+            "    languageOptions: { globals: globals.browser },",
+            "    plugins: {",
+            "      'react-hooks':   reactHooks,",
+            "      'react-refresh': reactRefresh,",
+            "    },",
+            "    rules: {",
+            "      ...reactHooks.configs.recommended.rules,",
+            "      'react-refresh/only-export-components': 'warn',",
+            "      '@typescript-eslint/no-explicit-any':   'error',  // запрет any",
+            "      '@typescript-eslint/no-unused-vars':    'error',",
+            "      'no-console': ['warn', { allow: ['error'] }],      // warn на console.log",
+            "    },",
+            "  }",
+            ")"
+          ].join("\n"),
+          noteType: "info",
+          note: "Vite создаёт этот файл автоматически. Главное добавить no-explicit-any и настроить Prettier."
+        }
+      ]
+    },
+    {
+      label: "Vitest + React Testing Library",
+      cards: [
+        {
+          title: "Установка тестов",
+          code: [
+            "npm install -D vitest @vitest/ui jsdom",
+            "npm install -D @testing-library/react @testing-library/user-event @testing-library/jest-dom",
+            "",
+            "// vite.config.ts — добавить",
+            "import { defineConfig } from 'vite'",
+            "",
+            "export default defineConfig({",
+            "  test: {",
+            "    environment: 'jsdom',",
+            "    globals:     true,",
+            "    setupFiles:  './src/test/setup.ts',",
+            "  },",
+            "})",
+            "",
+            "// src/test/setup.ts",
+            "import '@testing-library/jest-dom'",
+            "",
+            "// package.json",
+            "{",
+            "  \"scripts\": {",
+            "    \"test\":     \"vitest\",",
+            "    \"test:ui\":  \"vitest --ui\",",
+            "    \"coverage\": \"vitest run --coverage\"",
+            "  }",
+            "}"
+          ].join("\n")
+        },
+        {
+          title: "Тест компонента — базовый паттерн",
+          code: [
+            "import { render, screen } from '@testing-library/react'",
+            "import userEvent           from '@testing-library/user-event'",
+            "import { describe, it, expect, vi } from 'vitest'",
+            "import Button from './Button'",
+            "",
+            "describe('Button', () => {",
+            "  it('рендерит label', () => {",
+            "    render(<Button onClick={() => {}}>Нажми меня</Button>)",
+            "",
+            "    // screen.getBy* — бросает ошибку если не найден",
+            "    // screen.queryBy* — возвращает null если не найден",
+            "    expect(screen.getByText('Нажми меня')).toBeInTheDocument()",
+            "  })",
+            "",
+            "  it('вызывает onClick при клике', async () => {",
+            "    const handleClick = vi.fn()   // мок-функция",
+            "    const user = userEvent.setup()",
+            "",
+            "    render(<Button onClick={handleClick}>Кнопка</Button>)",
+            "",
+            "    await user.click(screen.getByRole('button'))",
+            "",
+            "    expect(handleClick).toHaveBeenCalledTimes(1)",
+            "  })",
+            "",
+            "  it('disabled блокирует клик', async () => {",
+            "    const handleClick = vi.fn()",
+            "    const user = userEvent.setup()",
+            "",
+            "    render(<Button onClick={handleClick} disabled>Кнопка</Button>)",
+            "    await user.click(screen.getByRole('button'))",
+            "",
+            "    expect(handleClick).not.toHaveBeenCalled()",
+            "  })",
+            "})"
+          ].join("\n"),
+          noteType: "success",
+          note: "Принцип RTL: тестируй то что видит пользователь (текст, роли), а не внутреннюю реализацию. getByRole — лучший способ найти элемент, он же проверяет accessibility."
+        },
+        {
+          title: "Тест с RTK Query и Redux",
+          code: [
+            "import { render, screen, waitFor } from '@testing-library/react'",
+            "import { Provider } from 'react-redux'",
+            "import { setupStore } from '../app/store'",
+            "import PostsList from './PostsList'",
+            "",
+            "// Обёртка с Provider",
+            "function renderWithStore(ui: React.ReactElement) {",
+            "  const store = setupStore()   // создаём свежий store для каждого теста",
+            "  return {",
+            "    ...render(<Provider store={store}>{ui}</Provider>),",
+            "    store,",
+            "  }",
+            "}",
+            "",
+            "// Мок fetch",
+            "vi.stubGlobal('fetch', vi.fn(() =>",
+            "  Promise.resolve({",
+            "    ok:   true,",
+            "    json: () => Promise.resolve([",
+            "      { id: 1, title: 'Тестовый пост' }",
+            "    ]),",
+            "  })",
+            "))",
+            "",
+            "it('показывает список постов', async () => {",
+            "  renderWithStore(<PostsList />)",
+            "",
+            "  // Ждём пока данные загрузятся",
+            "  await waitFor(() => {",
+            "    expect(screen.getByText('Тестовый пост')).toBeInTheDocument()",
+            "  })",
+            "})"
+          ].join("\n")
+        }
+      ]
+    },
+    {
+      label: "Git — базовые команды",
+      cards: [
+        {
+          title: "Git workflow для фронтенд-разработчика",
+          code: [
+            "# Посмотреть статус файлов",
+            "git status",
+            "",
+            "# Создать ветку для фичи и переключиться",
+            "git checkout -b feature/add-login-page",
+            "",
+            "# Добавить все изменения",
+            "git add .",
+            "",
+            "# Добавить конкретный файл",
+            "git add src/pages/Login.tsx",
+            "",
+            "# Коммит",
+            "git commit -m 'feat: add login page with validation'",
+            "",
+            "# Отправить ветку на GitHub",
+            "git push origin feature/add-login-page",
+            "",
+            "# Обновить свою ветку от main",
+            "git fetch origin",
+            "git rebase origin/main",
+            "",
+            "# Посмотреть историю",
+            "git log --oneline -10",
+            "",
+            "# Отменить последний коммит (оставить изменения)",
+            "git reset --soft HEAD~1",
+            "",
+            "# Выбросить все несохранённые изменения",
+            "git restore ."
+          ].join("\n")
+        },
+        {
+          title: "Conventional Commits — стандарт сообщений",
+          code: [
+            "// Формат: тип(область): описание",
+            "",
+            "// Типы:",
+            "feat:     новая функциональность",
+            "fix:      исправление бага",
+            "refactor: рефакторинг без новых фич и багфиксов",
+            "style:    форматирование, нет изменений логики",
+            "test:     добавление тестов",
+            "docs:     обновление документации",
+            "chore:    обновление зависимостей, конфигурации",
+            "perf:     улучшение производительности",
+            "ci:       изменения CI/CD",
+            "",
+            "// Примеры хороших коммитов:",
+            "git commit -m 'feat(auth): add JWT token refresh logic'",
+            "git commit -m 'fix(posts): fix pagination reset on filter change'",
+            "git commit -m 'refactor(store): extract auth selectors to separate file'",
+            "git commit -m 'test(button): add disabled state test'",
+            "",
+            "// Примеры плохих коммитов:",
+            "git commit -m 'fix'",
+            "git commit -m 'changes'",
+            "git commit -m 'wip'"
+          ].join("\n"),
+          noteType: "success",
+          note: "Conventional Commits — стандарт в командной разработке. По таким коммитам легко понять что и где изменилось, проще делать code review."
+        }
+      ]
+    },
+    {
+      label: "Vite — полезные возможности",
+      cards: [
+        {
+          title: "vite.config.ts — важные настройки",
+          code: [
+            "import { defineConfig } from 'vite'",
+            "import react from '@vitejs/plugin-react'",
+            "import path  from 'path'",
+            "",
+            "export default defineConfig({",
+            "  plugins: [react()],",
+            "",
+            "  // Абсолютные импорты — вместо '../../../components'",
+            "  resolve: {",
+            "    alias: {",
+            "      '@':          path.resolve(__dirname, './src'),",
+            "      '@features':  path.resolve(__dirname, './src/features'),",
+            "      '@pages':     path.resolve(__dirname, './src/pages'),",
+            "      '@shared':    path.resolve(__dirname, './src/shared'),",
+            "    },",
+            "  },",
+            "",
+            "  server: {",
+            "    port: 3000,",
+            "    // Проксировать API-запросы (чтобы не было CORS в dev)",
+            "    proxy: {",
+            "      '/api': {",
+            "        target:      'http://localhost:8080',",
+            "        changeOrigin: true,",
+            "      },",
+            "    },",
+            "  },",
+            "})"
+          ].join("\n"),
+          noteType: "success",
+          note: "Абсолютные импорты через alias — одна из первых настроек в реальных проектах. import Button from '@shared/ui/Button' вместо '../../../../shared/ui/Button'."
+        },
+        {
+          title: "Переменные окружения в Vite",
+          code: [
+            "// Файлы (создаются в корне проекта):",
+            "// .env              — для всех режимов",
+            "// .env.local        — локальные, не коммитятся в git",
+            "// .env.development  — только в dev",
+            "// .env.production   — только в production",
+            "",
+            "// .env.development",
+            "VITE_API_URL=http://localhost:8080/api",
+            "VITE_APP_TITLE=My App (Dev)",
+            "",
+            "// .env.production",
+            "VITE_API_URL=https://api.myapp.com",
+            "VITE_APP_TITLE=My App",
+            "",
+            "// Правило: переменные ДОЛЖНЫ начинаться с VITE_",
+            "// Иначе Vite не включит их в бандл",
+            "",
+            "// Использование в коде",
+            "const apiUrl = import.meta.env.VITE_API_URL",
+            "",
+            "// .env.local добавить в .gitignore:",
+            "// .env.local",
+            "// .env.*.local",
+            "",
+            "// Типизация — src/vite-env.d.ts",
+            "interface ImportMetaEnv {",
+            "  readonly VITE_API_URL:   string",
+            "  readonly VITE_APP_TITLE: string",
+            "}"
+          ].join("\n")
+        }
+      ]
+    }
+  ]
+}
+
+]; // end TABS
+
+// ─── рендер ──────────────────────────────────────────────────────────────────
+
+let activeId = "forms";
+
+function render() {
+  const tabsEl    = document.getElementById("tabs");
+  const contentEl = document.getElementById("content");
+
+  tabsEl.innerHTML = TABS.map(t => `
+    <button class="tab ${t.id === activeId ? "active" : ""}" data-id="${t.id}"
+      style="color:${t.id === activeId ? t.color : "#8b949e"};
+             border-bottom-color:${t.id === activeId ? t.color : "transparent"}">
+      ${t.label}
+    </button>
+  `).join("");
+
+  tabsEl.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => { activeId = btn.dataset.id; render(); });
+  });
+
+  const tab = TABS.find(t => t.id === activeId);
+
+  contentEl.innerHTML = tab.groups.map(group => {
+    const cards = group.cards.map((card, i) => {
+      const noteHtml = card.note
+        ? `<div class="note ${card.noteType || ""}">${card.note}</div>`
+        : "";
+      return `
+        <div class="card">
+          <div class="card-header">
+            <span class="dot" style="background:${tab.color}"></span>
+            ${card.title}
+          </div>
+          <div class="code-wrap">
+            <pre id="c-${group.label}-${i}">${escHtml(card.code)}</pre>
+            <button class="copy-btn" data-group="${group.label}" data-idx="${i}">copy</button>
+            ${noteHtml}
+          </div>
+        </div>`;
+    }).join("");
+    return `<div class="section-label">${group.label}</div>${cards}`;
+  }).join("");
+
+  contentEl.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const group = tab.groups.find(g => g.label === btn.dataset.group);
+      copyText(group.cards[parseInt(btn.dataset.idx)].code);
+      btn.textContent = "✓ ok";
+      btn.classList.add("ok");
+      setTimeout(() => { btn.textContent = "copy"; btn.classList.remove("ok"); }, 1500);
+    });
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function copyText(text) {
+  try { if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(()=>{}); return; } } catch(e) {}
+  try {
+    const el = document.createElement("textarea");
+    el.value = text; el.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(el); el.select();
+    document.execCommand("copy"); document.body.removeChild(el);
+  } catch(e) {}
+}
+
+render();
+</script>
+</body>
+</html>
