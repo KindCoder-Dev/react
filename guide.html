@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Stack — Путеводитель</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #010409;
+  color: #e6edf3;
+  font-family: system-ui, sans-serif;
+  padding-bottom: 80px;
+}
+
+/* ── NAVBAR ─────────────────────────────────────── */
+.navbar {
+  background: rgba(13,17,23,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #21262d;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.navbar a {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #8b949e;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.navbar a:hover { background: #161b22; color: #f0f6fc; }
+.navbar a.active { background: #161b22; color: #f0f6fc; }
+.navbar .sep { color: #30363d; }
+.navbar .cur { font-size: 13px; font-weight: 700; color: #f0f6fc; }
+.navbar-links { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ── HERO ────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(160deg, #0d1117 0%, #161b22 100%);
+  border-bottom: 1px solid #21262d;
+  padding: 40px 20px 36px;
+  text-align: center;
+}
+.hero h1 { font-size: 26px; font-weight: 800; color: #f0f6fc; letter-spacing: -.5px; }
+.hero p { color: #8b949e; font-size: 14px; margin-top: 8px; max-width: 560px; margin-inline: auto; line-height: 1.6; }
+
+/* ── WRAP ────────────────────────────────────────── */
+.wrap { max-width: 860px; margin: 0 auto; padding: 32px 16px 0; }
+
+.sec {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #8b949e;
+  margin: 44px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sec::after { content: ''; flex: 1; height: 1px; background: #21262d; }
+.sec:first-child { margin-top: 0; }
+
+/* ── STACK DIAGRAM ───────────────────────────────── */
+.stack { display: flex; flex-direction: column; gap: 3px; margin-bottom: 32px; }
+.stack-row { display: flex; gap: 3px; flex-wrap: wrap; }
+.cell {
+  flex: 1;
+  min-width: 160px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid #21262d;
+  background: #0d1117;
+}
+.cell .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; opacity: .6; margin-bottom: 4px; }
+.cell .nm  { font-size: 15px; font-weight: 700; }
+.cell .ds  { font-size: 12px; color: #8b949e; margin-top: 3px; line-height: 1.4; }
+
+/* ── MODULES ─────────────────────────────────────── */
+.modules { display: flex; flex-direction: column; gap: 20px; }
+
+.mod {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mod-head {
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid #21262d;
+  border-left: 3px solid var(--c);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.mod-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.mod-head h2 { font-size: 17px; font-weight: 700; color: #f0f6fc; }
+.mod-head .pkg { font-size: 11px; font-family: monospace; opacity: .5; margin-top: 3px; }
+.mod-head p { font-size: 13px; color: #8b949e; margin-top: 6px; line-height: 1.55; }
+
+.mod-body {
+  padding: 16px 20px 20px;
+  display: grid;
+  gap: 16px;
+}
+.mod-body.two { grid-template-columns: 1fr 1fr; }
+.full { grid-column: 1 / -1; }
+
+/* ── BLOCKS ──────────────────────────────────────── */
+.bl h3 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--c);
+  margin-bottom: 8px;
+}
+.bl ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.bl ul li {
+  font-size: 13px;
+  color: #c9d1d9;
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+.bl ul li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+/* ── WHEN ROWS ───────────────────────────────────── */
+.rows { display: grid; gap: 7px; }
+.row { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: #c9d1d9; }
+.row .i { flex-shrink: 0; }
+
+/* ── TABLES ──────────────────────────────────────── */
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 400px;
+}
+th {
+  background: #161b22;
+  padding: 9px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #8b949e;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  white-space: nowrap;
+}
+td {
+  padding: 9px 12px;
+  border-top: 1px solid #21262d;
+  color: #c9d1d9;
+  vertical-align: top;
+}
+tr:hover td { background: #161b22; }
+.yes  { color: #22c55e; font-weight: 700; }
+.no   { color: #ef4444; font-weight: 700; }
+.part { color: #f59e0b; font-weight: 700; }
+
+/* ── FLOW ────────────────────────────────────────── */
+.flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  row-gap: 6px;
+  margin: 6px 0;
+}
+.fb {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.fa { color: #30363d; font-size: 18px; padding: 0 4px; }
+
+/* ── NOTES ───────────────────────────────────────── */
+.note {
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  margin-top: 8px;
+  border-left: 3px solid;
+}
+.note.y { background: #161b22; border-color: #f59e0b; color: #d1a855; }
+.note.g { background: #161b22; border-color: #22c55e; color: #86efac; }
+.note.b { background: #161b22; border-color: #3b82f6; color: #93c5fd; }
+.note.r { background: #161b22; border-color: #ef4444; color: #fca5a5; }
+
+/* ── MODULE COLORS ───────────────────────────────── */
+.c1  { --c: #f97316; }
+.c2  { --c: #fb7185; }
+.c3  { --c: #8b5cf6; }
+.c4  { --c: #06b6d4; }
+.c5  { --c: #3b82f6; }
+.c6  { --c: #5a67d8; }
+.c7  { --c: #ef4444; }
+.c8  { --c: #06b6d4; }
+.c9  { --c: #f97316; }
+.c10 { --c: #ef4444; }
+.c11 { --c: #f59e0b; }
+.c12 { --c: #22c55e; }
+.c13 { --c: #f59e0b; }
+
+/* ── FOOTER ──────────────────────────────────────── */
+.foot {
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid #21262d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.foot a { color: #8b949e; text-decoration: none; font-size: 13px; font-weight: 600; }
+.foot a:hover { color: #f0f6fc; }
+.foot-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid;
+  text-decoration: none;
+  transition: opacity .15s;
+}
+.pill:hover { opacity: .75; }
+.pill-1 { color: #f97316; border-color: rgba(249,115,22,.3); background: rgba(249,115,22,.07); }
+.pill-2 { color: #8b5cf6; border-color: rgba(139,92,246,.3); background: rgba(139,92,246,.07); }
+.pill-3 { color: #06b6d4; border-color: rgba(6,182,212,.3);  background: rgba(6,182,212,.07);  }
+
+/* ── RESPONSIVE ──────────────────────────────────── */
+@media (max-width: 768px) {
+  /* navbar переносит ссылки на вторую строку */
+  .navbar { padding: 8px 14px; }
+  .navbar-links {
+    margin-left: 0;
+    width: 100%;
+    border-top: 1px solid #21262d;
+    padding-top: 8px;
+    gap: 4px;
+  }
+  .navbar-links a { font-size: 12px; padding: 4px 9px; }
+
+  /* hero */
+  .hero { padding: 28px 16px 24px; }
+  .hero h1 { font-size: 20px; }
+  .hero p { font-size: 13px; }
+
+  /* wrap */
+  .wrap { padding: 20px 12px 0; }
+  .sec { margin: 32px 0 12px; }
+
+  /* stack */
+  .cell { min-width: calc(50% - 4px); }
+
+  /* module head */
+  .mod-head { padding: 14px 16px 12px; gap: 10px; }
+  .mod-icon { width: 36px; height: 36px; font-size: 17px; }
+  .mod-head h2 { font-size: 15px; }
+  .mod-head p { font-size: 12.5px; margin-top: 4px; }
+
+  /* module body — 1 колонка */
+  .mod-body { padding: 12px 14px 16px; gap: 12px; }
+  .mod-body.two { grid-template-columns: 1fr; }
+
+  /* текст */
+  .bl ul li { font-size: 12.5px; }
+  .bl h3 { font-size: 11px; }
+  .row { font-size: 12.5px; }
+  .note { font-size: 12px; padding: 9px 11px; }
+
+  /* footer */
+  .foot { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 18px; }
+  .hero p { font-size: 12.5px; }
+
+  /* stack — 1 колонка */
+  .cell { min-width: 100%; }
+
+  .modules { gap: 12px; }
+  .mod-body { padding: 10px 12px 14px; }
+  .mod-head { padding: 12px 14px 10px; }
+
+  .wrap { padding: 14px 10px 0; }
+  .sec { font-size: 10px; margin: 24px 0 10px; }
+
+  .navbar { padding: 8px 12px; }
+  .navbar-links a { font-size: 11.5px; padding: 3px 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="active">← Главная</a>
+  <span class="sep">/</span>
+  <span class="cur">Путеводитель</span>
+  <div class="navbar-links">
+    <a href="cheatsheet.html">Шпаргалка №1</a>
+    <a href="cheatsheet2.html">Шпаргалка №2</a>
+    <a href="cheatsheet3.html">Шпаргалка №3</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>🧭 React Stack — Путеводитель</h1>
+  <p>Что для чего используется, когда выбирать каждый инструмент, как все части работают вместе в реальном приложении</p>
+</div>
+
+<div class="wrap">
+
+<!-- СТЕК ЦЕЛИКОМ -->
+<div class="sec">Весь стек одним взглядом</div>
+
+<div class="stack">
+  <div class="stack-row">
+    <div class="cell" style="border-color:#f97316aa">
+      <div class="lbl">Навигация</div>
+      <div class="nm" style="color:#f97316">React Router DOM</div>
+      <div class="ds">Страницы, URL, переходы, загрузка данных</div>
+    </div>
+    <div class="cell" style="border-color:#8b5cf6aa">
+      <div class="lbl">Глобальное состояние</div>
+      <div class="nm" style="color:#8b5cf6">Redux Toolkit</div>
+      <div class="ds">Auth, настройки, клиентские данные</div>
+    </div>
+    <div class="cell" style="border-color:#06b6d4aa">
+      <div class="lbl">Серверные данные</div>
+      <div class="nm" style="color:#06b6d4">RTK Query / TanStack</div>
+      <div class="ds">Запросы к API, кеш, инвалидация</div>
+    </div>
+  </div>
+  <div class="stack-row">
+    <div class="cell" style="border-color:#f97316aa">
+      <div class="lbl">Формы</div>
+      <div class="nm" style="color:#f97316">react-hook-form + zod</div>
+      <div class="ds">Валидация, производительность</div>
+    </div>
+    <div class="cell" style="border-color:#5a67d8aa">
+      <div class="lbl">HTTP клиент</div>
+      <div class="nm" style="color:#5a67d8">Axios</div>
+      <div class="ds">Запросы, интерцепторы, токены</div>
+    </div>
+    <div class="cell" style="border-color:#06b6d4aa">
+      <div class="lbl">Стили</div>
+      <div class="nm" style="color:#06b6d4">Tailwind CSS</div>
+      <div class="ds">Utility-first, адаптивность</div>
+    </div>
+  </div>
+  <div class="stack-row">
+    <div class="cell" style="border-color:#3b82f6aa; flex:2">
+      <div class="lbl">Типизация</div>
+      <div class="nm" style="color:#3b82f6">TypeScript</div>
+      <div class="ds">Безопасность типов, автодополнение, рефакторинг</div>
+    </div>
+    <div class="cell" style="border-color:#61dafbaa">
+      <div class="lbl">UI</div>
+      <div class="nm" style="color:#61dafb">React 18+</div>
+      <div class="ds">Компоненты, хуки, Suspense</div>
+    </div>
+    <div class="cell" style="border-color:#22c55eaa">
+      <div class="lbl">Производительность</div>
+      <div class="nm" style="color:#22c55e">lazy / Suspense / Transitions</div>
+      <div class="ds">Code splitting, плавный UI</div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДУЛИ -->
+<div class="sec">Модули подробно</div>
+<div class="modules">
+
+<!-- REACT ROUTER -->
+<div class="mod c1">
+  <div class="mod-head">
+    <div class="mod-icon">🗺️</div>
+    <div>
+      <h2>React Router DOM</h2>
+      <div class="pkg">npm install react-router-dom</div>
+      <p>Связывает URL браузера с компонентами. При переходе на /about рендерится компонент About — без перезагрузки страницы.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Для чего используется</h3>
+      <ul>
+        <li>Создавать многостраничные SPA-приложения</li>
+        <li>Переключать страницы без перезагрузки браузера</li>
+        <li>Читать URL: путь, параметры (:id), query (?page=2)</li>
+        <li>Вкладывать страницы в Layout (шапка + контент)</li>
+        <li>Закрывать маршруты от неавторизованных</li>
+        <li>Перенаправлять пользователей (redirect)</li>
+      </ul>
+    </div>
+    <div class="bl">
+      <h3>Когда применять</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Приложение имеет несколько "страниц"</span></div>
+        <div class="row"><span class="i">✅</span><span>Нужны кнопки Назад/Вперёд браузера</span></div>
+        <div class="row"><span class="i">✅</span><span>Нужно давать прямые ссылки на разделы</span></div>
+        <div class="row"><span class="i">✅</span><span>Нужна авторизация с редиректом</span></div>
+        <div class="row"><span class="i">❌</span><span>Лендинг из одной страницы — роутер не нужен</span></div>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>BrowserRouter vs createBrowserRouter</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Критерий</th><th>BrowserRouter</th><th>createBrowserRouter</th></tr>
+          <tr><td>Маршруты</td><td>JSX — &lt;Routes&gt;&lt;Route&gt;</td><td>Массив объектов</td></tr>
+          <tr><td>Загрузка данных до рендера</td><td class="no">✗ Нет (useEffect)</td><td class="yes">✓ loader</td></tr>
+          <tr><td>Обработка форм</td><td class="no">✗ Нет</td><td class="yes">✓ action</td></tr>
+          <tr><td>Ошибки маршрута</td><td class="part">△ ErrorBoundary вручную</td><td class="yes">✓ errorElement</td></tr>
+          <tr><td>useFetcher, useSubmit</td><td class="no">✗ Недоступны</td><td class="yes">✓ Полный доступ</td></tr>
+          <tr><td>Рекомендуется для</td><td>Обучение, простые проекты</td><td><strong>Production</strong></td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Все хуки роутера — когда что использовать</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Хук</th><th>Для чего</th><th>Пример</th></tr>
+          <tr><td><code>useNavigate</code></td><td>Программный переход</td><td>После логина → navigate('/dashboard')</td></tr>
+          <tr><td><code>useParams</code></td><td>Динамические части URL (:id)</td><td>const { id } = useParams()</td></tr>
+          <tr><td><code>useSearchParams</code></td><td>?query=... в URL</td><td>Фильтры, пагинация</td></tr>
+          <tr><td><code>useLocation</code></td><td>Текущий pathname, state</td><td>Аналитика, чтение state из navigate()</td></tr>
+          <tr><td><code>useLoaderData</code></td><td>Данные из loader текущего маршрута</td><td>Страница уже с данными до рендера</td></tr>
+          <tr><td><code>useNavigation</code></td><td>Состояние загрузки (loading/submitting)</td><td>Прогресс-бар при переходе</td></tr>
+          <tr><td><code>useActionData</code></td><td>Ответ из action после формы</td><td>Ошибки валидации от сервера</td></tr>
+          <tr><td><code>useFetcher</code></td><td>loader/action без навигации</td><td>Лайк, inline-редактирование, тогл</td></tr>
+          <tr><td><code>useSubmit</code></td><td>Программно отправить форму</td><td>Автосохранение по debounce</td></tr>
+          <tr><td><code>useBlocker</code></td><td>Блокировать уход со страницы</td><td>"Есть несохранённые изменения"</td></tr>
+          <tr><td><code>useRevalidator</code></td><td>Перезапустить все loader-ы</td><td>Обновить данные по WebSocket</td></tr>
+          <tr><td><code>useMatches</code></td><td>Все совпавшие маршруты</td><td>Хлебные крошки через handle</td></tr>
+        </table>
+      </div>
+      <div class="note b">URL должен измениться → обычная навигация (navigate, Link). URL остаётся — useFetcher.</div>
+    </div>
+  </div>
+</div>
+
+<!-- REDUX -->
+<div class="mod c3">
+  <div class="mod-head">
+    <div class="mod-icon">🏪</div>
+    <div>
+      <h2>Redux Toolkit (RTK)</h2>
+      <div class="pkg">npm install @reduxjs/toolkit react-redux</div>
+      <p>Централизованное хранилище клиентского состояния. Данные доступны из любого компонента без пробрасывания props через дерево.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Что хранить в Redux</h3>
+      <ul>
+        <li>Токен авторизации и данные пользователя</li>
+        <li>Тема, язык, пользовательские настройки</li>
+        <li>Глобальные уведомления (toast/snackbar)</li>
+        <li>Корзина покупок, избранное</li>
+        <li>Всё что нужно в 2+ несвязанных местах</li>
+      </ul>
+    </div>
+    <div class="bl">
+      <h3>Что НЕ хранить</h3>
+      <div class="rows">
+        <div class="row"><span class="i">❌</span><span>Значения полей формы → useState / RHF</span></div>
+        <div class="row"><span class="i">❌</span><span>Открыт ли попап/дропдаун → useState</span></div>
+        <div class="row"><span class="i">❌</span><span>Данные от сервера → RTK Query</span></div>
+        <div class="row"><span class="i">❌</span><span>Данные нужны только одному компоненту</span></div>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Поток данных Redux</h3>
+      <div class="flow">
+        <div class="fb" style="color:#f0f6fc">Компонент</div><div class="fa">→</div>
+        <div class="fb" style="color:#8b5cf6">dispatch(action)</div><div class="fa">→</div>
+        <div class="fb" style="color:#8b5cf6">Reducer</div><div class="fa">→</div>
+        <div class="fb" style="color:#8b5cf6">Store (новый state)</div><div class="fa">→</div>
+        <div class="fb" style="color:#f0f6fc">useAppSelector</div><div class="fa">→</div>
+        <div class="fb" style="color:#f0f6fc">Ре-рендер</div>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Ключевые понятия</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Понятие</th><th>Что это</th><th>Пример</th></tr>
+          <tr><td><strong>Store</strong></td><td>Единое хранилище всего состояния</td><td>configureStore({ reducer: { auth, posts } })</td></tr>
+          <tr><td><strong>Slice</strong></td><td>Часть store + reducer + actions одной фичи</td><td>authSlice — токен, пользователь, статус</td></tr>
+          <tr><td><strong>Action</strong></td><td>Описание того что произошло</td><td>{ type: 'auth/setToken', payload: 'abc' }</td></tr>
+          <tr><td><strong>Reducer</strong></td><td>Меняет state в ответ на action</td><td>setToken: (state, action) => { state.token = action.payload }</td></tr>
+          <tr><td><strong>Selector</strong></td><td>Функция извлечения данных из store</td><td>useAppSelector(s => s.auth.token)</td></tr>
+          <tr><td><strong>Thunk</strong></td><td>Асинхронная операция (createAsyncThunk)</td><td>fetchPosts — pending / fulfilled / rejected</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RTK QUERY -->
+<div class="mod c4">
+  <div class="mod-head">
+    <div class="mod-icon">⚡</div>
+    <div>
+      <h2>RTK Query</h2>
+      <div class="pkg">встроен в @reduxjs/toolkit</div>
+      <p>Запросы к API с автоматическим кешированием, инвалидацией и загрузочными состояниями. Хранит данные в том же Redux store.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Для чего используется</h3>
+      <ul>
+        <li>GET-запросы с кешированием результата</li>
+        <li>POST/PUT/DELETE мутации данных</li>
+        <li>Автообновление UI после мутации (теги)</li>
+        <li>Дедупликация одинаковых запросов</li>
+        <li>Polling — автообновление каждые N секунд</li>
+        <li>Prefetch — предзагрузка при hover</li>
+      </ul>
+    </div>
+    <div class="bl">
+      <h3>RTK Query vs Thunk</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th></th><th>Thunk</th><th>RTK Query</th></tr>
+          <tr><td>Кеш</td><td class="no">Вручную</td><td class="yes">Авто</td></tr>
+          <tr><td>isLoading</td><td class="no">Вручную</td><td class="yes">Авто</td></tr>
+          <tr><td>Инвалидация</td><td class="no">Вручную</td><td class="yes">Теги</td></tr>
+          <tr><td>Дубли</td><td class="no">Возможны</td><td class="yes">Нет</td></tr>
+          <tr><td>Кода</td><td>Много</td><td>Минимум</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Кеширование и инвалидация тегов</h3>
+      <div class="flow">
+        <div class="fb" style="color:#06b6d4">getPosts() запрос</div><div class="fa">→</div>
+        <div class="fb" style="color:#f0f6fc">Кеш: tag Post/LIST</div><div class="fa">→</div>
+        <div class="fb" style="color:#22c55e">createPost() мутация</div><div class="fa">→</div>
+        <div class="fb" style="color:#f59e0b">invalidates Post/LIST</div><div class="fa">→</div>
+        <div class="fb" style="color:#06b6d4">getPosts() авто-рефетч</div>
+      </div>
+      <div class="note g">Теги — главная суперсила RTK Query. После мутации нужные данные перезапрашиваются автоматически.</div>
+    </div>
+    <div class="bl full">
+      <h3>Что возвращает useQuery</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Поле</th><th>Когда true / что содержит</th></tr>
+          <tr><td><code>isLoading</code></td><td>Первый запрос, кешированных данных ещё нет</td></tr>
+          <tr><td><code>isFetching</code></td><td>Любой активный запрос — в т.ч. фоновое обновление</td></tr>
+          <tr><td><code>isSuccess</code></td><td>Последний запрос завершился успешно</td></tr>
+          <tr><td><code>isError</code></td><td>Последний запрос завершился ошибкой</td></tr>
+          <tr><td><code>data</code></td><td>Данные последнего успешного ответа</td></tr>
+          <tr><td><code>error</code></td><td>Объект ошибки (status, data)</td></tr>
+          <tr><td><code>refetch</code></td><td>Функция для ручного повторного запроса</td></tr>
+        </table>
+      </div>
+      <div class="note b"><strong>isLoading vs isFetching:</strong> isLoading = нет данных вообще. isFetching = любой запрос в процессе, даже если кешированные данные уже есть.</div>
+    </div>
+  </div>
+</div>
+
+<!-- AXIOS -->
+<div class="mod c6">
+  <div class="mod-head">
+    <div class="mod-icon">🌐</div>
+    <div>
+      <h2>Axios</h2>
+      <div class="pkg">npm install axios</div>
+      <p>HTTP-клиент для запросов к API. Популярнее нативного fetch благодаря интерцепторам и удобной обработке ошибок.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Axios vs fetch</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Автоматически парсит JSON</span></div>
+        <div class="row"><span class="i">✅</span><span>Бросает ошибку при 4xx/5xx автоматически</span></div>
+        <div class="row"><span class="i">✅</span><span>Интерцепторы — токен ко всем запросам</span></div>
+        <div class="row"><span class="i">✅</span><span>Прогресс загрузки файлов</span></div>
+        <div class="row"><span class="i">✅</span><span>axios.isAxiosError() — типизированные ошибки</span></div>
+        <div class="row"><span class="i">❌</span><span>fetch достаточен для простых проектов</span></div>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>Когда использовать</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Нужны интерцепторы (авто-токен, авто-logout при 401)</span></div>
+        <div class="row"><span class="i">✅</span><span>Централизованная обработка ошибок</span></div>
+        <div class="row"><span class="i">✅</span><span>Загрузка файлов с прогресс-баром</span></div>
+        <div class="row"><span class="i">➡️</span><span>Используется как queryFn внутри TanStack Query</span></div>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Архитектура — один instance на весь проект</h3>
+      <div class="flow">
+        <div class="fb" style="color:#f0f6fc">Компонент</div><div class="fa">→</div>
+        <div class="fb" style="color:#5a67d8">api.get('/posts')</div><div class="fa">→</div>
+        <div class="fb" style="color:#5a67d8">Request Interceptor (+ токен)</div><div class="fa">→</div>
+        <div class="fb" style="color:#5a67d8">fetch https://api.com</div><div class="fa">→</div>
+        <div class="fb" style="color:#5a67d8">Response Interceptor (ошибки)</div><div class="fa">→</div>
+        <div class="fb" style="color:#f0f6fc">{ data }</div>
+      </div>
+      <div class="note b">Всегда создавай axios.create() instance вместо использования axios напрямую. Так baseURL и заголовки задаются один раз.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TANSTACK QUERY -->
+<div class="mod c7">
+  <div class="mod-head">
+    <div class="mod-icon">🔴</div>
+    <div>
+      <h2>TanStack Query (React Query)</h2>
+      <div class="pkg">npm install @tanstack/react-query</div>
+      <p>Альтернатива RTK Query — управление серверными данными без Redux. Независим, гибче API, встроенный бесконечный скролл.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Когда TanStack Query, когда RTK Query</h3>
+      <div class="rows">
+        <div class="row"><span class="i">🔵</span><span><strong>RTK Query</strong> — уже используешь Redux в проекте</span></div>
+        <div class="row"><span class="i">🔴</span><span><strong>TanStack Query</strong> — Redux не нужен, только серверные данные</span></div>
+        <div class="row"><span class="i">🔴</span><span><strong>TanStack Query</strong> — нужен useInfiniteQuery из коробки</span></div>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>Ключевые отличия от RTK Query</h3>
+      <ul>
+        <li>Не зависит от Redux — работает сам по себе</li>
+        <li>useInfiniteQuery — бесконечный скролл без доп. кода</li>
+        <li>queryKey как массив — гибкое кеширование</li>
+        <li>Optimistic update через onMutate / onError</li>
+        <li>Лучше DevTools для отладки</li>
+      </ul>
+    </div>
+    <div class="bl full">
+      <h3>queryKey — адрес в кеше</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>queryKey</th><th>Что кешируется</th></tr>
+          <tr><td><code>['posts']</code></td><td>Список всех постов</td></tr>
+          <tr><td><code>['posts', 42]</code></td><td>Конкретный пост с id=42</td></tr>
+          <tr><td><code>['posts', { page: 1, sort: 'date' }]</code></td><td>Посты с фильтрами — разные фильтры = разный кеш</td></tr>
+          <tr><td><code>['posts', postId, 'comments']</code></td><td>Комментарии конкретного поста</td></tr>
+        </table>
+      </div>
+      <div class="note y">Включай в queryKey всё от чего зависит запрос. При изменении любого элемента ключа — запрос перезапустится автоматически.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAILWIND -->
+<div class="mod c8">
+  <div class="mod-head">
+    <div class="mod-icon">🎨</div>
+    <div>
+      <h2>Tailwind CSS</h2>
+      <div class="pkg">npm install -D tailwindcss postcss autoprefixer</div>
+      <p>Utility-first CSS фреймворк. Вместо написания CSS-классов — применяешь готовые утилиты прямо в JSX. В бандл попадают только используемые классы.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Принцип работы</h3>
+      <div class="rows">
+        <div class="row"><span class="i">📌</span><span>Один класс = одно CSS-свойство: <code>p-4</code> = padding: 16px</span></div>
+        <div class="row"><span class="i">📌</span><span>Адаптивность: <code>md:flex</code> — flex от 768px</span></div>
+        <div class="row"><span class="i">📌</span><span>Состояния: <code>hover:bg-blue-600</code>, <code>focus:ring-2</code></span></div>
+        <div class="row"><span class="i">📌</span><span>Шкала: 1=4px, 2=8px, 4=16px, 8=32px</span></div>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>Когда использовать</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Не хочешь переключаться между HTML и CSS файлами</span></div>
+        <div class="row"><span class="i">✅</span><span>Нужна быстрая адаптивность без медиазапросов вручную</span></div>
+        <div class="row"><span class="i">✅</span><span>Команда договорилась о дизайн-системе</span></div>
+        <div class="row"><span class="i">➡️</span><span>cn() = clsx + tailwind-merge — обязательная утилита</span></div>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Наиболее используемые группы классов</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Группа</th><th>Классы</th><th>Что делают</th></tr>
+          <tr><td>Flex</td><td><code>flex items-center justify-between gap-4</code></td><td>Горизонтальное выравнивание с отступами</td></tr>
+          <tr><td>Grid</td><td><code>grid grid-cols-3 gap-6</code></td><td>Сетка из 3 колонок</td></tr>
+          <tr><td>Spacing</td><td><code>p-4 px-6 mt-8 mb-0</code></td><td>Отступы внутри и снаружи</td></tr>
+          <tr><td>Typography</td><td><code>text-xl font-bold text-gray-600</code></td><td>Размер, жирность, цвет текста</td></tr>
+          <tr><td>Responsive</td><td><code>hidden md:flex lg:grid-cols-4</code></td><td>Разный вид на разных экранах</td></tr>
+          <tr><td>Анимации</td><td><code>animate-pulse animate-spin</code></td><td>Skeleton-лоадер, spinner</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORMS -->
+<div class="mod c9">
+  <div class="mod-head">
+    <div class="mod-icon">📝</div>
+    <div>
+      <h2>react-hook-form + Zod</h2>
+      <div class="pkg">npm install react-hook-form zod @hookform/resolvers</div>
+      <p>Стандарт для форм в production React-проектах. RHF не хранит значения в state — нет ре-рендеров при каждом нажатии. Zod одновременно даёт типы TypeScript и правила валидации.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Зачем RHF вместо useState</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Нет ре-рендеров при каждом нажатии клавиши</span></div>
+        <div class="row"><span class="i">✅</span><span>Встроенный isSubmitting, isDirty, isValid</span></div>
+        <div class="row"><span class="i">✅</span><span>Валидация из коробки + интеграция с Zod</span></div>
+        <div class="row"><span class="i">✅</span><span>useFieldArray — динамические поля списком</span></div>
+        <div class="row"><span class="i">✅</span><span>watch — подписка на изменение поля</span></div>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>Зачем Zod</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Схема = правила валидации + TypeScript тип</span></div>
+        <div class="row"><span class="i">✅</span><span>type FormData = z.infer&lt;typeof schema&gt; — тип автоматически</span></div>
+        <div class="row"><span class="i">✅</span><span>refine — кросс-полевая валидация (confirmPassword)</span></div>
+        <div class="row"><span class="i">✅</span><span>safeParse — безопасная валидация данных от API</span></div>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Ключевые API react-hook-form</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>API</th><th>Для чего</th><th>Когда нужен</th></tr>
+          <tr><td><code>register</code></td><td>Подключить нативный input к форме</td><td>Всегда для стандартных инпутов</td></tr>
+          <tr><td><code>handleSubmit</code></td><td>Обёртка onSubmit — вызывает только если валидно</td><td>Всегда</td></tr>
+          <tr><td><code>watch</code></td><td>Следить за значением поля</td><td>Зависимые поля, условный рендер</td></tr>
+          <tr><td><code>setValue</code></td><td>Установить значение программно</td><td>Заполнить форму данными с сервера</td></tr>
+          <tr><td><code>reset</code></td><td>Сбросить к дефолтным значениям</td><td>После submit или загрузки данных</td></tr>
+          <tr><td><code>Controller</code></td><td>Для кастомных компонентов без нативного ref</td><td>DatePicker, Select-библиотеки</td></tr>
+          <tr><td><code>useFieldArray</code></td><td>Динамический список полей</td><td>Строки таблицы, список телефонов</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ERROR BOUNDARIES -->
+<div class="mod c10">
+  <div class="mod-head">
+    <div class="mod-icon">🛡️</div>
+    <div>
+      <h2>Error Boundaries</h2>
+      <div class="pkg">npm install react-error-boundary</div>
+      <p>Без них одна ошибка в компоненте роняет всё приложение — белый экран. С ними — только конкретный блок показывает fallback, остальное работает.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Что ловит Error Boundary</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Ошибки в render()</span></div>
+        <div class="row"><span class="i">✅</span><span>Ошибки в lifecycle-методах</span></div>
+        <div class="row"><span class="i">✅</span><span>Ошибки в дочерних компонентах</span></div>
+        <div class="row"><span class="i">❌</span><span>Ошибки в event handlers → try/catch</span></div>
+        <div class="row"><span class="i">❌</span><span>Асинхронные ошибки (fetch) → try/catch</span></div>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>Стратегия расстановки</h3>
+      <div class="rows">
+        <div class="row"><span class="i">1️⃣</span><span><strong>Глобальный</strong> — оборачивает всё приложение (обязателен)</span></div>
+        <div class="row"><span class="i">2️⃣</span><span><strong>По страницам</strong> — ошибка страницы не ломает навигацию</span></div>
+        <div class="row"><span class="i">3️⃣</span><span><strong>По виджетам</strong> — упавший виджет не роняет дашборд</span></div>
+      </div>
+      <div class="note y">Чем мельче Error Boundary — тем меньше теряет пользователь при ошибке.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ZUSTAND -->
+<div class="mod c11">
+  <div class="mod-head">
+    <div class="mod-icon">🐻</div>
+    <div>
+      <h2>Zustand</h2>
+      <div class="pkg">npm install zustand</div>
+      <p>Лёгкая альтернатива Redux. Минимум кода, не требует Provider, работает с любым HTTP-клиентом. Популярен в проектах где Redux избыточен.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Redux vs Zustand</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th></th><th>Redux Toolkit</th><th>Zustand</th></tr>
+          <tr><td>Бойлерплейт</td><td>Средний</td><td class="yes">Минимум</td></tr>
+          <tr><td>Provider нужен</td><td class="no">Да</td><td class="yes">Нет</td></tr>
+          <tr><td>DevTools</td><td class="yes">Отличные</td><td class="part">Базовые</td></tr>
+          <tr><td>RTK Query</td><td class="yes">Встроен</td><td class="no">Нет (нужен TanStack)</td></tr>
+          <tr><td>Подходит для</td><td>Команды, большие проекты</td><td>Быстрый старт, средние</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>Когда выбирать Zustand</h3>
+      <div class="rows">
+        <div class="row"><span class="i">✅</span><span>Нужно только глобальное состояние без API</span></div>
+        <div class="row"><span class="i">✅</span><span>Проект небольшой / средний</span></div>
+        <div class="row"><span class="i">✅</span><span>Команда не знает Redux</span></div>
+        <div class="row"><span class="i">✅</span><span>Используешь TanStack Query для данных</span></div>
+        <div class="row"><span class="i">❌</span><span>Уже есть Redux в проекте — не смешивай</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TYPESCRIPT -->
+<div class="mod c5">
+  <div class="mod-head">
+    <div class="mod-icon">🔷</div>
+    <div>
+      <h2>TypeScript</h2>
+      <div class="pkg">встроен в Vite при создании проекта</div>
+      <p>Добавляет статическую типизацию. Компилируется в JS — вся польза во время разработки: IDE ловит ошибки до запуска кода.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>Зачем в React-проекте</h3>
+      <ul>
+        <li>IDE знает какие props принимает компонент</li>
+        <li>Ошибка типа → до запуска, не в браузере</li>
+        <li>Рефакторинг безопаснее — TS найдёт все места</li>
+        <li>Типы Props = документация API компонента</li>
+        <li>Автодополнение полей, методов, импортов</li>
+        <li>Обязателен в командной разработке</li>
+      </ul>
+    </div>
+    <div class="bl">
+      <h3>Utility Types</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Тип</th><th>Что делает</th></tr>
+          <tr><td><code>Partial&lt;T&gt;</code></td><td>Все поля опциональны</td></tr>
+          <tr><td><code>Required&lt;T&gt;</code></td><td>Все поля обязательны</td></tr>
+          <tr><td><code>Pick&lt;T, K&gt;</code></td><td>Взять только K полей</td></tr>
+          <tr><td><code>Omit&lt;T, K&gt;</code></td><td>Все поля кроме K</td></tr>
+          <tr><td><code>Record&lt;K,V&gt;</code></td><td>Объект с ключами K и значениями V</td></tr>
+          <tr><td><code>ReturnType&lt;T&gt;</code></td><td>Тип возврата функции</td></tr>
+          <tr><td><code>NonNullable&lt;T&gt;</code></td><td>Убрать null / undefined</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>Где TypeScript особенно важен в стеке</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Место</th><th>Что типизируем</th><th>Польза</th></tr>
+          <tr><td>Redux Store</td><td>RootState, AppDispatch</td><td>useAppSelector знает все поля state</td></tr>
+          <tr><td>RTK Query</td><td><code>builder.query&lt;Post[], void&gt;</code></td><td>data приходит с правильным типом</td></tr>
+          <tr><td>Router loader</td><td><code>useLoaderData() as Type</code></td><td>Данные страницы типизированы</td></tr>
+          <tr><td>Props компонентов</td><td><code>interface ButtonProps</code></td><td>IDE подсказывает что передавать</td></tr>
+          <tr><td>Zod схемы</td><td><code>z.infer&lt;typeof schema&gt;</code></td><td>Тип формы выводится автоматически</td></tr>
+          <tr><td>Axios ошибки</td><td><code>axios.isAxiosError&lt;ApiError&gt;(e)</code></td><td>Типизированный объект ошибки от сервера</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PERFORMANCE -->
+<div class="mod c12">
+  <div class="mod-head">
+    <div class="mod-icon">🚀</div>
+    <div>
+      <h2>Производительность — lazy, Suspense, Transitions</h2>
+      <div class="pkg">React 18 — встроено</div>
+      <p>Code splitting уменьшает начальный бандл, useTransition убирает подвисание при тяжёлых обновлениях, useDeferredValue делает поиск мгновенным.</p>
+    </div>
+  </div>
+  <div class="mod-body two">
+    <div class="bl">
+      <h3>lazy + Suspense</h3>
+      <div class="rows">
+        <div class="row"><span class="i">📌</span><span><code>lazy()</code> — загружает компонент только при первом переходе</span></div>
+        <div class="row"><span class="i">📌</span><span><code>Suspense</code> — показывает fallback пока chunk грузится</span></div>
+        <div class="row"><span class="i">✅</span><span>Страницы — каждая страница отдельный chunk</span></div>
+        <div class="row"><span class="i">✅</span><span>С createBrowserRouter — loader и lazy параллельны</span></div>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>useTransition vs useDeferredValue</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th></th><th>useTransition</th><th>useDeferredValue</th></tr>
+          <tr><td>Что делает</td><td>setState как несрочное</td><td>Задерживает значение</td></tr>
+          <tr><td>Когда</td><td>Контролируешь setState</td><td>Prop / store извне</td></tr>
+          <tr><td>Пример</td><td>Переключение вкладок</td><td>Поиск по данным</td></tr>
+          <tr><td>memo нужен</td><td class="no">Нет</td><td class="yes">Да</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="bl full">
+      <h3>createBrowserRouter: loader и lazy работают параллельно</h3>
+      <div class="flow">
+        <div class="fb" style="color:#f97316">BrowserRouter</div><div class="fa">→</div>
+        <div class="fb" style="color:#8b949e">chunk → рендер → useEffect → fetch → данные</div>
+      </div>
+      <div style="height:6px"></div>
+      <div class="flow">
+        <div class="fb" style="color:#fb7185">createBrowserRouter</div><div class="fa">→</div>
+        <div class="fb" style="color:#86efac">chunk + loader fetch параллельно → рендер сразу с данными</div>
+      </div>
+      <div class="note g">С createBrowserRouter пользователь ждёт меньше — данные и код страницы грузятся одновременно.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ВСЁ ВМЕСТЕ -->
+<div class="mod c13">
+  <div class="mod-head">
+    <div class="mod-icon">🧩</div>
+    <div>
+      <h2>Как всё работает вместе</h2>
+      <div class="pkg">Зоны ответственности каждого инструмента</div>
+      <p>Каждый инструмент отвечает за свою зону — они не конкурируют, а дополняют друг друга.</p>
+    </div>
+  </div>
+  <div class="mod-body">
+    <div class="bl full">
+      <h3>Зоны ответственности</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Вопрос</th><th>Инструмент</th><th>Пример</th></tr>
+          <tr><td>Какая страница открыта?</td><td style="color:#f97316">React Router</td><td>URL /posts/42 → рендер PostPage</td></tr>
+          <tr><td>Загрузить данные страницы</td><td style="color:#f97316">Router loader</td><td>loader: () => fetch('/api/posts/42')</td></tr>
+          <tr><td>HTTP-запросы к API</td><td style="color:#5a67d8">Axios instance</td><td>api.get('/posts') — с токеном авто</td></tr>
+          <tr><td>Загрузить данные в компоненте</td><td style="color:#06b6d4">RTK Query / TanStack</td><td>useGetPostByIdQuery(42)</td></tr>
+          <tr><td>Мутировать данные на сервере</td><td style="color:#06b6d4">RTK Query mutation</td><td>useUpdatePostMutation()</td></tr>
+          <tr><td>Кто залогинен?</td><td style="color:#8b5cf6">Redux / Zustand</td><td>state.auth.user</td></tr>
+          <tr><td>Настройки приложения</td><td style="color:#8b5cf6">Redux / Zustand</td><td>state.settings.theme</td></tr>
+          <tr><td>Форма с валидацией</td><td style="color:#f97316">react-hook-form + Zod</td><td>zodResolver(schema)</td></tr>
+          <tr><td>Стили компонентов</td><td style="color:#06b6d4">Tailwind CSS</td><td>className="flex items-center gap-4"</td></tr>
+          <tr><td>Открыт ли попап</td><td style="color:#61dafb">useState</td><td>const [open, setOpen] = useState(false)</td></tr>
+          <tr><td>Разбить бандл</td><td style="color:#22c55e">lazy + Suspense</td><td>const Page = lazy(() => import('./Page'))</td></tr>
+          <tr><td>Ошибки компонентов</td><td style="color:#ef4444">Error Boundary</td><td>Изолировать упавший виджет</td></tr>
+        </table>
+      </div>
+      <div class="note y"><strong>Главное правило:</strong> Router = URL. RTK Query/TanStack = данные от API. Redux/Zustand = клиентское состояние. useState = локальное. RHF = формы. Tailwind = стили. lazy = бандл.</div>
+    </div>
+    <div class="bl full">
+      <h3>Жизненный цикл запроса в реальном приложении</h3>
+      <div class="flow" style="flex-direction:column; align-items:center; gap:5px">
+        <div class="fb" style="color:#f97316">1. Клик на /posts → Router запускает lazy + loader параллельно</div>
+        <div class="fa" style="transform:rotate(90deg)">→</div>
+        <div class="fb" style="color:#5a67d8">2. Axios: GET /api/posts (автоматически добавляет токен из Redux)</div>
+        <div class="fa" style="transform:rotate(90deg)">→</div>
+        <div class="fb" style="color:#f0f6fc">3. PostsPage рендерится с данными сразу (useLoaderData)</div>
+        <div class="fa" style="transform:rotate(90deg)">→</div>
+        <div class="fb" style="color:#8b5cf6">4. Компонент читает user из Redux — показывает кнопки по роли</div>
+        <div class="fa" style="transform:rotate(90deg)">→</div>
+        <div class="fb" style="color:#06b6d4">5. Пользователь лайкает пост → useFetcher (URL не меняется)</div>
+        <div class="fa" style="transform:rotate(90deg)">→</div>
+        <div class="fb" style="color:#06b6d4">6. mutation → invalidatesTags → список обновился автоматически</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /modules -->
+
+<!-- FOOTER -->
+<div class="foot">
+  <a href="index.html">← На главную</a>
+  <div class="foot-links">
+    <a href="cheatsheet.html"  class="pill pill-1">Шпаргалка №1</a>
+    <a href="cheatsheet2.html" class="pill pill-2">Шпаргалка №2</a>
+    <a href="cheatsheet3.html" class="pill pill-3">Шпаргалка №3</a>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+</body>
+</html>
