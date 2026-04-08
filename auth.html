@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Авторизация — React Dev Kit</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #010409; color: #e6edf3; font-family: system-ui, sans-serif; padding-bottom: 80px; }
+
+.navbar {
+  background: rgba(13,17,23,.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid #21262d; padding: 10px 20px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 100;
+}
+.navbar a { font-size: 12.5px; font-weight: 600; color: #8b949e; text-decoration: none; padding: 5px 10px; border-radius: 6px; white-space: nowrap; transition: background .15s, color .15s; }
+.navbar a:hover { background: #161b22; color: #f0f6fc; }
+.navbar a.active { background: #161b22; color: #f0f6fc; }
+.navbar .sep { color: #30363d; }
+.navbar .cur { font-size: 13px; font-weight: 700; color: #f0f6fc; }
+.navbar-links { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+
+.hero { background: linear-gradient(160deg, #0d1117 0%, #161b22 100%); border-bottom: 1px solid #21262d; padding: 40px 20px 36px; text-align: center; }
+.hero h1 { font-size: 26px; font-weight: 800; color: #f0f6fc; letter-spacing: -.5px; }
+.hero p { color: #8b949e; font-size: 14px; margin-top: 8px; max-width: 560px; margin-inline: auto; line-height: 1.6; }
+
+.wrap { max-width: 860px; margin: 0 auto; padding: 32px 16px 0; }
+.sec { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #8b949e; margin: 44px 0 14px; display: flex; align-items: center; gap: 10px; }
+.sec::after { content: ''; flex: 1; height: 1px; background: #21262d; }
+.sec:first-child { margin-top: 0; }
+
+.cards { display: flex; flex-direction: column; gap: 20px; }
+.card { background: #0d1117; border: 1px solid #21262d; border-radius: 12px; overflow: hidden; }
+.card-head { padding: 18px 20px 16px; border-bottom: 1px solid #21262d; border-left: 3px solid var(--c, #f59e0b); display: flex; align-items: flex-start; gap: 14px; }
+.card-icon { width: 42px; height: 42px; border-radius: 10px; background: color-mix(in srgb, var(--c, #f59e0b) 15%, transparent); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.card-head h2 { font-size: 17px; font-weight: 700; color: #f0f6fc; }
+.card-head p { font-size: 13px; color: #8b949e; margin-top: 6px; line-height: 1.55; }
+.card-body { padding: 16px 20px 20px; display: grid; gap: 16px; }
+.card-body.two { grid-template-columns: 1fr 1fr; }
+.full { grid-column: 1 / -1; }
+
+.bl h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--c, #f59e0b); margin-bottom: 8px; }
+.bl ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.bl ul li { font-size: 13px; color: #c9d1d9; line-height: 1.5; padding-left: 16px; position: relative; }
+.bl ul li::before { content: ''; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--c, #f59e0b); }
+
+.rows { display: grid; gap: 7px; }
+.row { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: #c9d1d9; }
+.row .i { flex-shrink: 0; }
+
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 380px; }
+th { background: #161b22; padding: 9px 12px; text-align: left; font-weight: 600; color: #8b949e; font-size: 11px; text-transform: uppercase; letter-spacing: .7px; white-space: nowrap; }
+td { padding: 9px 12px; border-top: 1px solid #21262d; color: #c9d1d9; vertical-align: top; }
+tr:hover td { background: #161b22; }
+.yes { color: #22c55e; font-weight: 700; }
+.no  { color: #ef4444; font-weight: 700; }
+.part { color: #f59e0b; font-weight: 700; }
+
+.note { border-radius: 8px; padding: 11px 13px; font-size: 12.5px; line-height: 1.6; margin-top: 8px; border-left: 3px solid; }
+.note.y { background: #161b22; border-color: #f59e0b; color: #d1a855; }
+.note.g { background: #161b22; border-color: #22c55e; color: #86efac; }
+.note.b { background: #161b22; border-color: #3b82f6; color: #93c5fd; }
+.note.r { background: #161b22; border-color: #ef4444; color: #fca5a5; }
+
+pre {
+  background: #010409; border: 1px solid #21262d; border-radius: 8px;
+  padding: 14px 16px; font-size: 12px; line-height: 1.7;
+  overflow-x: auto; color: #e6edf3; font-family: monospace;
+  white-space: pre; margin-top: 8px; position: relative;
+}
+
+.foot { margin-top: 56px; padding-top: 28px; border-top: 1px solid #21262d; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.foot a { color: #8b949e; text-decoration: none; font-size: 13px; font-weight: 600; }
+.foot a:hover { color: #f0f6fc; }
+.foot-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1px solid; text-decoration: none; transition: opacity .15s; }
+.pill:hover { opacity: .75; }
+.pill-g { color: #f59px; }
+.p1 { color: #f97316; border-color: rgba(249,115,22,.3); background: rgba(249,115,22,.07); }
+.p2 { color: #8b5cf6; border-color: rgba(139,92,246,.3); background: rgba(139,92,246,.07); }
+.p3 { color: #06b6d4; border-color: rgba(6,182,212,.3);  background: rgba(6,182,212,.07); }
+.pg { color: #f59e0b; border-color: rgba(245,158,11,.3);  background: rgba(245,158,11,.07); }
+
+@media (max-width: 768px) {
+  .navbar { padding: 8px 14px; }
+  .navbar-links { margin-left: 0; width: 100%; border-top: 1px solid #21262d; padding-top: 8px; gap: 4px; }
+  .navbar-links a { font-size: 12px; padding: 4px 9px; }
+  .hero { padding: 28px 16px 24px; }
+  .hero h1 { font-size: 20px; }
+  .wrap { padding: 20px 12px 0; }
+  .card-body.two { grid-template-columns: 1fr; }
+  .card-head { padding: 14px 16px 12px; gap: 10px; }
+  .card-icon { width: 36px; height: 36px; font-size: 17px; }
+  .card-head h2 { font-size: 15px; }
+  .foot { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 480px) {
+  .hero h1 { font-size: 18px; }
+  .wrap { padding: 14px 10px 0; }
+  .navbar-links a { font-size: 11.5px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="active">← Главная</a>
+  <span class="sep">/</span>
+  <span class="cur">Авторизация</span>
+  <div class="navbar-links">
+    <a href="guide.html">Путеводитель</a>
+    <a href="cheatsheet.html">Шпаргалка №1</a>
+    <a href="cheatsheet2.html">Шпаргалка №2</a>
+    <a href="cheatsheet3.html">Шпаргалка №3</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>🔐 Авторизация в React</h1>
+  <p>Концепции, паттерны и готовый код — от JWT до защиты маршрутов и авто-обновления токена</p>
+</div>
+
+<div class="wrap">
+
+<!-- КОНЦЕПЦИИ -->
+<div class="sec">Концепции — как работает авторизация</div>
+<div class="cards">
+
+<div class="card" style="--c: #f59e0b">
+  <div class="card-head">
+    <div class="card-icon">🔑</div>
+    <div>
+      <h2>JWT — как работает</h2>
+      <p>JSON Web Token — самый популярный способ авторизации в SPA. Сервер выдаёт два токена: access (короткоживущий) и refresh (долгоживущий).</p>
+    </div>
+  </div>
+  <div class="card-body two">
+    <div class="bl">
+      <h3>Схема работы</h3>
+      <div class="rows">
+        <div class="row"><span class="i">1️⃣</span><span>Пользователь вводит логин/пароль → POST /login</span></div>
+        <div class="row"><span class="i">2️⃣</span><span>Сервер возвращает access_token (15 мин) + refresh_token (7 дней)</span></div>
+        <div class="row"><span class="i">3️⃣</span><span>Клиент отправляет access_token в каждом запросе в заголовке</span></div>
+        <div class="row"><span class="i">4️⃣</span><span>access_token истёк → клиент отправляет refresh_token → получает новый access_token</span></div>
+        <div class="row"><span class="i">5️⃣</span><span>refresh_token истёк → разлогинить, перейти на /login</span></div>
+      </div>
+    </div>
+    <div class="bl">
+      <h3>Структура JWT токена</h3>
+      <div class="rows">
+        <div class="row"><span class="i">📌</span><span><strong>Header</strong> — алгоритм подписи (HS256)</span></div>
+        <div class="row"><span class="i">📌</span><span><strong>Payload</strong> — данные: userId, role, exp (время истечения)</span></div>
+        <div class="row"><span class="i">📌</span><span><strong>Signature</strong> — подпись, проверяется на сервере</span></div>
+      </div>
+      <div class="note b">JWT можно декодировать без ключа — не храни в нём секреты (пароль, карты). Только публичные данные: id, роль.</div>
+    </div>
+    <div class="bl full">
+      <h3>Где хранить токены — сравнение</h3>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Хранилище</th><th>Плюсы</th><th>Минусы</th><th>Рекомендация</th></tr>
+          <tr><td><strong>localStorage</strong></td><td>Просто, сохраняется между сессиями</td><td class="no">Уязвим к XSS — скрипт может украсть токен</td><td class="part">Приемлемо для несекретных приложений</td></tr>
+          <tr><td><strong>sessionStorage</strong></td><td>Очищается при закрытии вкладки</td><td class="no">Тоже уязвим к XSS</td><td class="no">Не рекомендуется</td></tr>
+          <tr><td><strong>Cookie (httpOnly)</strong></td><td class="yes">Недоступен для JS — защита от XSS</td><td>Требует настройки CORS, уязвим к CSRF</td><td class="yes">Лучший вариант для production</td></tr>
+          <tr><td><strong>Memory (переменная)</strong></td><td class="yes">Максимальная защита</td><td>Теряется при обновлении страницы</td><td class="yes">Для access_token + refresh в cookie</td></tr>
+        </table>
+      </div>
+      <div class="note g">Лучший паттерн: access_token в памяти (переменная/state), refresh_token в httpOnly cookie. Если не настраиваешь backend — localStorage приемлем для учебных проектов.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /cards -->
+
+<!-- КОД: REDUX + RTK QUERY -->
+<div class="sec">Redux — authSlice и authApi</div>
+<div class="cards">
+
+<div class="card" style="--c: #8b5cf6">
+  <div class="card-head">
+    <div class="card-icon">🏪</div>
+    <div>
+      <h2>authSlice.ts — хранение состояния авторизации</h2>
+      <p>Slice хранит токен и данные пользователя. RTK Query делает запросы к API.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bl full">
+      <h3>features/auth/authSlice.ts</h3>
+      <pre>import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+interface User {
+  id:    number
+  name:  string
+  email: string
+  role:  'admin' | 'user' | 'guest'
+}
+
+interface AuthState {
+  token: string | null
+  user:  User   | null
+}
+
+const initialState: AuthState = {
+  // Читаем токен из localStorage при старте приложения
+  token: localStorage.getItem('token'),
+  user:  null,
+}
+
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setCredentials: (state, action: PayloadAction&lt;{ token: string; user: User }&gt;) =&gt; {
+      state.token = action.payload.token
+      state.user  = action.payload.user
+      localStorage.setItem('token', action.payload.token)
+    },
+    setUser: (state, action: PayloadAction&lt;User&gt;) =&gt; {
+      state.user = action.payload
+    },
+    logout: (state) =&gt; {
+      state.token = null
+      state.user  = null
+      localStorage.removeItem('token')
+    },
+  },
+})
+
+export const { setCredentials, setUser, logout } = authSlice.actions
+export default authSlice.reducer
+
+// Селекторы
+export const selectToken   = (state: RootState) =&gt; state.auth.token
+export const selectUser    = (state: RootState) =&gt; state.auth.user
+export const selectIsAuth  = (state: RootState) =&gt; Boolean(state.auth.token)
+export const selectIsAdmin = (state: RootState) =&gt; state.auth.user?.role === 'admin'</pre>
+    </div>
+    <div class="bl full">
+      <h3>features/auth/authApi.ts — RTK Query эндпоинты</h3>
+      <pre>import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import type { RootState } from '../../app/store'
+
+interface LoginRequest    { email: string; password: string }
+interface RegisterRequest { name: string; email: string; password: string }
+interface AuthResponse    { token: string; user: User }
+
+export const authApi = createApi({
+  reducerPath: 'authApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_URL,
+    // Автоматически добавляет токен ко всем запросам
+    prepareHeaders: (headers, { getState }) =&gt; {
+      const token = (getState() as RootState).auth.token
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`)
+      }
+      return headers
+    },
+  }),
+  endpoints: (builder) =&gt; ({
+
+    // Вход
+    login: builder.mutation&lt;AuthResponse, LoginRequest&gt;({
+      query: (credentials) =&gt; ({
+        url:    '/auth/login',
+        method: 'POST',
+        body:   credentials,
+      }),
+    }),
+
+    // Регистрация
+    register: builder.mutation&lt;AuthResponse, RegisterRequest&gt;({
+      query: (data) =&gt; ({
+        url:    '/auth/register',
+        method: 'POST',
+        body:   data,
+      }),
+    }),
+
+    // Получить текущего пользователя (при старте приложения)
+    getMe: builder.query&lt;User, void&gt;({
+      query: () =&gt; '/auth/me',
+    }),
+
+    // Выход
+    logoutApi: builder.mutation&lt;void, void&gt;({
+      query: () =&gt; ({ url: '/auth/logout', method: 'POST' }),
+    }),
+
+  }),
+})
+
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useGetMeQuery,
+  useLogoutApiMutation,
+} = authApi</pre>
+      <div class="note b">authApi и authSlice работают вместе: authApi делает запросы, authSlice хранит результат. После успешного login — вызываем dispatch(setCredentials(...)) чтобы сохранить токен в store.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /cards -->
+
+<!-- КОД: AXIOS -->
+<div class="sec">Axios — интерцептор с авто-обновлением токена</div>
+<div class="cards">
+
+<div class="card" style="--c: #5a67d8">
+  <div class="card-head">
+    <div class="card-icon">🌐</div>
+    <div>
+      <h2>shared/lib/axios.ts — интерцепторы авторизации</h2>
+      <p>Axios автоматически добавляет токен ко всем запросам и обновляет его при истечении — без изменений в компонентах.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bl full">
+      <h3>Базовый интерцептор — добавить токен</h3>
+      <pre>import axios from 'axios'
+import { store } from '../../app/store'
+import { logout } from '../../features/auth/authSlice'
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10_000,
+})
+
+// REQUEST — добавляем токен к каждому запросу
+api.interceptors.request.use((config) =&gt; {
+  const token = store.getState().auth.token
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// RESPONSE — обрабатываем ошибки глобально
+api.interceptors.response.use(
+  (response) =&gt; response,
+  (error) =&gt; {
+    if (error.response?.status === 401) {
+      // Токен невалиден — разлогиниваем
+      store.dispatch(logout())
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)</pre>
+    </div>
+    <div class="bl full">
+      <h3>Продвинутый вариант — авто-обновление access_token</h3>
+      <pre>import axios, { AxiosError } from 'axios'
+import { store } from '../../app/store'
+import { setCredentials, logout } from '../../features/auth/authSlice'
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10_000,
+})
+
+// REQUEST — добавляем токен
+api.interceptors.request.use((config) =&gt; {
+  const token = store.getState().auth.token
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+// Флаг — идёт ли сейчас обновление токена
+let isRefreshing = false
+// Очередь запросов которые ждут новый токен
+let refreshQueue: Array&lt;(token: string) =&gt; void&gt; = []
+
+// RESPONSE — перехватываем 401 и обновляем токен
+api.interceptors.response.use(
+  (response) =&gt; response,
+  async (error: AxiosError) =&gt; {
+    const original = error.config as any
+
+    // Если 401 и это не повторный запрос
+    if (error.response?.status === 401 &amp;&amp; !original._retry) {
+      original._retry = true
+
+      if (isRefreshing) {
+        // Уже обновляем — ставим запрос в очередь
+        return new Promise((resolve) =&gt; {
+          refreshQueue.push((token) =&gt; {
+            original.headers.Authorization = `Bearer ${token}`
+            resolve(api(original))
+          })
+        })
+      }
+
+      isRefreshing = true
+
+      try {
+        // Запрашиваем новый токен
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_API_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }  // refresh_token в httpOnly cookie
+        )
+
+        const newToken = data.token
+
+        // Сохраняем новый токен
+        store.dispatch(setCredentials({ token: newToken, user: data.user }))
+
+        // Повторяем все запросы из очереди с новым токеном
+        refreshQueue.forEach((cb) =&gt; cb(newToken))
+        refreshQueue = []
+
+        // Повторяем исходный запрос
+        original.headers.Authorization = `Bearer ${newToken}`
+        return api(original)
+
+      } catch {
+        // Refresh не удался — разлогиниваем
+        store.dispatch(logout())
+        refreshQueue = []
+        window.location.href = '/login'
+        return Promise.reject(error)
+      } finally {
+        isRefreshing = false
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)</pre>
+      <div class="note g">isRefreshing + очередь — ключевой момент. Без этого при одновременных запросах с истёкшим токеном каждый из них попытается обновить токен отдельно, что приводит к ошибкам.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /cards -->
+
+<!-- КОД: ФОРМЫ -->
+<div class="sec">Формы — регистрация и вход через RHF + Zod</div>
+<div class="cards">
+
+<div class="card" style="--c: #f97316">
+  <div class="card-head">
+    <div class="card-icon">📝</div>
+    <div>
+      <h2>Форма регистрации — полный пример</h2>
+      <p>react-hook-form + Zod + RTK Query mutation + Redux dispatch. Все части стека вместе.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bl full">
+      <h3>pages/RegisterPage.tsx</h3>
+      <pre>import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useRegisterMutation } from '../features/auth/authApi'
+import { setCredentials } from '../features/auth/authSlice'
+
+// 1. Схема валидации
+const schema = z.object({
+  name: z.string()
+    .min(2, 'Имя минимум 2 символа')
+    .max(50, 'Имя максимум 50 символов'),
+
+  email: z.string()
+    .email('Введите корректный email'),
+
+  password: z.string()
+    .min(8, 'Пароль минимум 8 символов')
+    .regex(/[A-Z]/, 'Должна быть хотя бы одна заглавная буква')
+    .regex(/[0-9]/, 'Должна быть хотя бы одна цифра'),
+
+  confirmPassword: z.string(),
+})
+.refine(
+  (data) =&gt; data.password === data.confirmPassword,
+  { message: 'Пароли не совпадают', path: ['confirmPassword'] }
+)
+
+type RegisterFormData = z.infer&lt;typeof schema&gt;
+
+export default function RegisterPage() {
+  const navigate  = useNavigate()
+  const dispatch  = useDispatch()
+
+  const [register, { isLoading }] = useRegisterMutation()
+
+  const {
+    register: field,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm&lt;RegisterFormData&gt;({ resolver: zodResolver(schema) })
+
+  const onSubmit = async (data: RegisterFormData) =&gt; {
+    try {
+      const result = await register({
+        name:     data.name,
+        email:    data.email,
+        password: data.password,
+      }).unwrap()
+
+      // Сохраняем токен и пользователя в Redux
+      dispatch(setCredentials({ token: result.token, user: result.user }))
+
+      // Переходим на главную
+      navigate('/', { replace: true })
+
+    } catch (err: any) {
+      // Ошибка от сервера — email уже занят
+      if (err?.data?.field === 'email') {
+        setError('email', { message: err.data.message })
+      }
+    }
+  }
+
+  return (
+    &lt;div className="max-w-md mx-auto mt-16 p-8 bg-gray-900 rounded-xl"&gt;
+      &lt;h1 className="text-2xl font-bold mb-6"&gt;Регистрация&lt;/h1&gt;
+
+      &lt;form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4"&gt;
+
+        &lt;div&gt;
+          &lt;input
+            {...field('name')}
+            placeholder="Имя"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg"
+          /&gt;
+          {errors.name &amp;&amp; &lt;p className="text-red-400 text-sm mt-1"&gt;{errors.name.message}&lt;/p&gt;}
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;input
+            {...field('email')}
+            type="email"
+            placeholder="Email"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg"
+          /&gt;
+          {errors.email &amp;&amp; &lt;p className="text-red-400 text-sm mt-1"&gt;{errors.email.message}&lt;/p&gt;}
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;input
+            {...field('password')}
+            type="password"
+            placeholder="Пароль"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg"
+          /&gt;
+          {errors.password &amp;&amp; &lt;p className="text-red-400 text-sm mt-1"&gt;{errors.password.message}&lt;/p&gt;}
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;input
+            {...field('confirmPassword')}
+            type="password"
+            placeholder="Подтвердите пароль"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg"
+          /&gt;
+          {errors.confirmPassword &amp;&amp; &lt;p className="text-red-400 text-sm mt-1"&gt;{errors.confirmPassword.message}&lt;/p&gt;}
+        &lt;/div&gt;
+
+        &lt;button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold disabled:opacity-50"
+        &gt;
+          {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
+        &lt;/button&gt;
+
+      &lt;/form&gt;
+
+      &lt;p className="mt-4 text-gray-400 text-sm text-center"&gt;
+        Уже есть аккаунт?&amp;nbsp;
+        &lt;a href="/login" className="text-blue-400 hover:underline"&gt;Войти&lt;/a&gt;
+      &lt;/p&gt;
+    &lt;/div&gt;
+  )
+}</pre>
+    </div>
+    <div class="bl full">
+      <h3>pages/LoginPage.tsx</h3>
+      <pre>import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useLoginMutation } from '../features/auth/authApi'
+import { setCredentials } from '../features/auth/authSlice'
+
+const schema = z.object({
+  email:    z.string().email('Введите корректный email'),
+  password: z.string().min(1, 'Введите пароль'),
+})
+
+type LoginFormData = z.infer&lt;typeof schema&gt;
+
+export default function LoginPage() {
+  const navigate      = useNavigate()
+  const dispatch      = useDispatch()
+  const [params]      = useSearchParams()
+
+  const [login, { isLoading }] = useLoginMutation()
+
+  const { register, handleSubmit, setError, formState: { errors } } =
+    useForm&lt;LoginFormData&gt;({ resolver: zodResolver(schema) })
+
+  const onSubmit = async (data: LoginFormData) =&gt; {
+    try {
+      const result = await login(data).unwrap()
+      dispatch(setCredentials({ token: result.token, user: result.user }))
+
+      // Возвращаем на страницу откуда пришли (или на главную)
+      const returnTo = params.get('returnTo') ?? '/'
+      navigate(returnTo, { replace: true })
+
+    } catch (err: any) {
+      if (err?.status === 401) {
+        setError('password', { message: 'Неверный email или пароль' })
+      }
+    }
+  }
+
+  return (
+    &lt;div className="max-w-md mx-auto mt-16 p-8 bg-gray-900 rounded-xl"&gt;
+      &lt;h1 className="text-2xl font-bold mb-6"&gt;Вход&lt;/h1&gt;
+
+      &lt;form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4"&gt;
+        &lt;div&gt;
+          &lt;input {...register('email')} type="email" placeholder="Email"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg" /&gt;
+          {errors.email &amp;&amp; &lt;p className="text-red-400 text-sm mt-1"&gt;{errors.email.message}&lt;/p&gt;}
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;input {...register('password')} type="password" placeholder="Пароль"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg" /&gt;
+          {errors.password &amp;&amp; &lt;p className="text-red-400 text-sm mt-1"&gt;{errors.password.message}&lt;/p&gt;}
+        &lt;/div&gt;
+
+        &lt;button type="submit" disabled={isLoading}
+          className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold disabled:opacity-50"&gt;
+          {isLoading ? 'Входим...' : 'Войти'}
+        &lt;/button&gt;
+      &lt;/form&gt;
+
+      &lt;p className="mt-4 text-gray-400 text-sm text-center"&gt;
+        Нет аккаунта?&amp;nbsp;
+        &lt;a href="/register" className="text-blue-400 hover:underline"&gt;Зарегистрироваться&lt;/a&gt;
+      &lt;/p&gt;
+    &lt;/div&gt;
+  )
+}</pre>
+    </div>
+  </div>
+</div>
+
+</div><!-- /cards -->
+
+<!-- КОД: ЗАЩИТА МАРШРУТОВ -->
+<div class="sec">Защита маршрутов — BrowserRouter и createBrowserRouter</div>
+<div class="cards">
+
+<div class="card" style="--c: #fb7185">
+  <div class="card-head">
+    <div class="card-icon">🛡️</div>
+    <div>
+      <h2>BrowserRouter — ProtectedRoute компонент</h2>
+      <p>Классический способ защиты маршрутов. Компонент-обёртка проверяет авторизацию и редиректит при необходимости.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bl full">
+      <h3>components/ProtectedRoute.tsx</h3>
+      <pre>import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useAppSelector } from '../app/hooks'
+import { selectIsAuth, selectUser } from '../features/auth/authSlice'
+
+interface ProtectedRouteProps {
+  requiredRole?: 'admin' | 'user'
+}
+
+export default function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
+  const isAuth   = useAppSelector(selectIsAuth)
+  const user     = useAppSelector(selectUser)
+  const location = useLocation()
+
+  // Не авторизован — редирект на /login с сохранением текущего URL
+  if (!isAuth) {
+    return &lt;Navigate to={`/login?returnTo=${location.pathname}`} replace /&gt;
+  }
+
+  // Нет нужной роли — редирект на /403
+  if (requiredRole &amp;&amp; user?.role !== requiredRole) {
+    return &lt;Navigate to="/403" replace /&gt;
+  }
+
+  return &lt;Outlet /&gt;
+}
+
+// App.tsx — использование
+&lt;Routes&gt;
+  {/* Публичные маршруты */}
+  &lt;Route path="/login"    element={&lt;LoginPage /&gt;} /&gt;
+  &lt;Route path="/register" element={&lt;RegisterPage /&gt;} /&gt;
+
+  {/* Защищённые — для всех авторизованных */}
+  &lt;Route element={&lt;ProtectedRoute /&gt;}&gt;
+    &lt;Route path="/"         element={&lt;HomePage /&gt;} /&gt;
+    &lt;Route path="/profile"  element={&lt;ProfilePage /&gt;} /&gt;
+    &lt;Route path="/settings" element={&lt;SettingsPage /&gt;} /&gt;
+  &lt;/Route&gt;
+
+  {/* Только для admin */}
+  &lt;Route element={&lt;ProtectedRoute requiredRole="admin" /&gt;}&gt;
+    &lt;Route path="/admin" element={&lt;AdminPage /&gt;} /&gt;
+  &lt;/Route&gt;
+
+  &lt;Route path="/403" element={&lt;Forbidden /&gt;} /&gt;
+  &lt;Route path="*"    element={&lt;NotFound /&gt;} /&gt;
+&lt;/Routes&gt;</pre>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="--c: #fb7185">
+  <div class="card-head">
+    <div class="card-icon">🚀</div>
+    <div>
+      <h2>createBrowserRouter — защита через loader</h2>
+      <p>Современный способ. Редирект происходит до рендера компонента — пользователь не увидит даже вспышки защищённой страницы.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bl full">
+      <h3>router.tsx — защита через loader</h3>
+      <pre>import { createBrowserRouter, redirect } from 'react-router-dom'
+import { store } from './app/store'
+import { selectIsAuth, selectUser } from './features/auth/authSlice'
+
+// Вспомогательные функции проверки
+function requireAuth(request: Request) {
+  const isAuth = selectIsAuth(store.getState())
+  if (!isAuth) {
+    const url      = new URL(request.url)
+    const returnTo = encodeURIComponent(url.pathname + url.search)
+    throw redirect(`/login?returnTo=${returnTo}`)
+  }
+}
+
+function requireRole(role: string) {
+  requireAuth(new Request(window.location.href))
+  const user = selectUser(store.getState())
+  if (user?.role !== role) throw redirect('/403')
+}
+
+export const router = createBrowserRouter([
+
+  // Публичные маршруты
+  {
+    path: '/login',
+    element: &lt;LoginPage /&gt;,
+    loader: () =&gt; {
+      // Уже залогинен — перенаправляем на главную
+      if (selectIsAuth(store.getState())) return redirect('/')
+      return null
+    },
+  },
+  { path: '/register', element: &lt;RegisterPage /&gt; },
+
+  // Защищённые маршруты — один loader на всю группу
+  {
+    id: 'protected',
+    element: &lt;RootLayout /&gt;,
+    loader: ({ request }) =&gt; {
+      requireAuth(request)             // проверяем авторизацию
+      return null                      // можно загрузить данные пользователя
+    },
+    children: [
+      { index: true,        element: &lt;HomePage /&gt; },
+      { path: 'profile',    element: &lt;ProfilePage /&gt; },
+      { path: 'settings',   element: &lt;SettingsPage /&gt; },
+      {
+        path: 'admin',
+        element: &lt;AdminPage /&gt;,
+        loader: () =&gt; { requireRole('admin'); return null },
+      },
+    ],
+  },
+
+  { path: '/403', element: &lt;Forbidden /&gt; },
+  { path: '*',    element: &lt;NotFound /&gt; },
+])</pre>
+      <div class="note g">requireAuth читает store напрямую через store.getState() — без хуков. Это работает потому что loader выполняется вне React-дерева.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /cards -->
+
+<!-- ИНИЦИАЛИЗАЦИЯ -->
+<div class="sec">Инициализация — загрузка пользователя при старте</div>
+<div class="cards">
+
+<div class="card" style="--c: #22c55e">
+  <div class="card-head">
+    <div class="card-icon">⚡</div>
+    <div>
+      <h2>Загрузить данные пользователя при старте приложения</h2>
+      <p>При обновлении страницы токен есть в localStorage, но данные пользователя (имя, роль) нужно загрузить заново с сервера.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bl full">
+      <h3>App.tsx — инициализация при монтировании</h3>
+      <pre>import { useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from './app/hooks'
+import { selectToken, setUser, logout } from './features/auth/authSlice'
+import { useGetMeQuery } from './features/auth/authApi'
+
+function AppInitializer({ children }: { children: React.ReactNode }) {
+  const token = useAppSelector(selectToken)
+
+  // Загружаем профиль только если есть токен
+  const { data: user, isError } = useGetMeQuery(undefined, {
+    skip: !token,  // не делать запрос если токена нет
+  })
+
+  const dispatch = useAppDispatch()
+
+  useEffect(() =&gt; {
+    if (user)    dispatch(setUser(user))
+    if (isError) dispatch(logout())  // токен невалиден — разлогинить
+  }, [user, isError, dispatch])
+
+  return &lt;&gt;{children}&lt;/&gt;
+}
+
+// main.tsx
+&lt;Provider store={store}&gt;
+  &lt;AppInitializer&gt;
+    &lt;RouterProvider router={router} /&gt;
+  &lt;/AppInitializer&gt;
+&lt;/Provider&gt;</pre>
+      <div class="note b">Этот паттерн решает проблему: токен есть, но после обновления страницы user = null. AppInitializer запрашивает /auth/me при старте и восстанавливает данные пользователя.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /cards -->
+
+<!-- FOOTER -->
+<div class="foot">
+  <a href="index.html">← На главную</a>
+  <div class="foot-links">
+    <a href="guide.html"       class="pill pg">Путеводитель</a>
+    <a href="cheatsheet.html"  class="pill p1">Шпаргалка №1</a>
+    <a href="cheatsheet2.html" class="pill p2">Шпаргалка №2</a>
+    <a href="cheatsheet3.html" class="pill p3">Шпаргалка №3</a>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+</body>
+</html>
